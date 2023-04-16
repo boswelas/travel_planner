@@ -28,3 +28,17 @@ To run backend locally:
 3. Run the main entry point with: `railway run python main.py`
 4. Go to http://localhost:5000/ to see greeting from Travel Planner backend
 
+# Frontend
+
+The frontend uses Next.js. The code can be found int he `.\frontend` directory.
+
+The frontend will be hosted on Vercel.
+
+To run frontend locally:
+### Installation of frontend
+0. Have Node version 16 or above installed
+1. Open `frontend` directory in a terminal
+2. Set up environment with: `npm install`
+3. Run `npm run dev`
+4. Go to http://localhost:3000/ 
+
