@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 import os
 import mysql.connector
 
 app = Flask(__name__)
+CORS(app)
 
 HOST = os.environ['MYSQLHOST']
 PORT = os.environ['MYSQLPORT']
@@ -31,7 +33,7 @@ def get_all_users():
     result = cursor.fetchall()
     print(result)
 
-    return jsonify(f"database name: {result}")
+    return jsonify(f"result: {result}")
 
 
 if __name__ == '__main__':
