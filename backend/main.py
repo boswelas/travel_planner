@@ -33,7 +33,7 @@ def get_all_users():
     result = cursor.fetchall()
     print(result)
 
-    return jsonify(f"result: {result}")
+    return jsonify(result=result)
 
 
 if __name__ == '__main__':
