@@ -5,7 +5,7 @@ export default function UserTable() {
     const [data, setData] = useState([]);
 
     async function GetUserData() {
-        const response = await fetch("http://travel-planner-production.up.railway.app/user");
+        const response = await fetch("https://travel-planner-production.up.railway.app/user");
         const jsonData = await response.json();
         setData(jsonData.result)
       }
