@@ -10,8 +10,8 @@ export default function UserTable() {
         setData(jsonData.result)
       }
 
-    const listRows = data.map((row) =>
-      <tr>
+    const listRows = data.map((row, index) =>
+      <tr key={index}>
           <td>{row[0]}</td>
           <td>{row[1]}</td>
           <td>{row[2]}</td>
