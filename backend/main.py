@@ -12,13 +12,17 @@ USER = os.environ['MYSQLUSER']
 PASSWORD = os.environ['MYSQLPASSWORD']
 DATABASE = os.environ['MYSQLDATABASE']
 
-db = mysql.connector.connect(
-    host=HOST,
-    port=PORT,
-    user=USER,
-    password=PASSWORD,
-    database=DATABASE
-)
+
+def create_connection():
+    db = mysql.connector.connect(
+        host=HOST,
+        port=PORT,
+        user=USER,
+        password=PASSWORD,
+        database=DATABASE
+    )
+
+    return db
 
 @app.route('/')
 def index():
@@ -28,10 +32,18 @@ def index():
 @app.route('/user')
 def get_all_users():
 
-    cursor = db.cursor()
+    # Opens connection & cursor
+    cnx = create_connection()
+    cursor = cnx.cursor()
+
+    # Database queries & logic
     cursor.execute("SELECT * FROM user")
     result = cursor.fetchall()
     print(result)
+
+    # Closes connection & cursor
+    cursor.close()
+    cnx.close()
 
     return jsonify(result=result)
 
