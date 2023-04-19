@@ -42,3 +42,16 @@ To run frontend locally:
 3. Run `npm run dev`
 4. Go to http://localhost:3000/ 
 
+
+
+# Dev Plan
+
+## Routes
+- Home
+- Login
+- Sign Up
+- Trips
+- Explore
+- Search
+- Experience
+- Create Experience Form
