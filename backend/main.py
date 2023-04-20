@@ -78,7 +78,7 @@ def experiences():
             cur.execute(query)
             data = cur.fetchall()
         else:
-            query1 = "SELECT title, description, geo-location, image, keywords FROM experiences"
+            query1 = "SELECT experience_id, title, description, geo-location, image, keywords FROM experiences"
             cur = mysql.connection.cursor()
             cur.execute(query1)
             data = cur.fetchall()
