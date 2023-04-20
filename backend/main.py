@@ -82,7 +82,8 @@ def experiences():
             cur = mysql.connection.cursor()
             cur.execute(query1)
             data = cur.fetchall()
-        return render_template("experiences.j2", data=data)
+        # return render_template("experiences.j2", data=data)   # can be used later
+        return jsonify(data=data)
     
 
 ############################# END route for Experiences #############################
