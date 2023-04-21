@@ -24,7 +24,7 @@ To run backend locally:
 ### Running backend
 0. After installation
 1. Open `backend` directory in a terminal
-2. Activate the virtual environment with: `.\venv\bin\activate` [for MacOS: python -m venv env]
+2. Activate the virtual environment with: `.\venv\bin\activate` [for MacOS: source ./env/bin/activate]
 3. Run the main entry point with: `railway run python main.py`
 4. Go to http://localhost:5000/ to see greeting from Travel Planner backend
 
