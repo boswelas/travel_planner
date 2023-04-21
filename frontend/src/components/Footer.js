@@ -1,8 +1,8 @@
 const Footer = () => {
     return ( 
-        <div>
+        <footer>
             Travel Planner App for OSU Captstone
-        </div>
+        </footer>
      );
 }
  
