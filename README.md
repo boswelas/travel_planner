@@ -55,3 +55,9 @@ To run frontend locally:
 - Search
 - Experience
 - Create Experience Form
+
+
+# Sources
+## Big thanks to :
+- The Net Ninja Next.JS playlist @ https://www.youtube.com/playlist?list=PL4cUxeGkcC9g9gP2onazU5-2M-AzA8eBw
+  -  Referenced for page routing, and Layout.js/Header.js/Footer.js structure
