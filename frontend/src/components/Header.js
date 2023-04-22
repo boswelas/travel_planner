@@ -6,8 +6,8 @@ const Header = () => {
         <header>
             <nav class={styles.header}>
                 <Link href="/"><div className={styles.logo}>Travel Planner</div></Link>
-                <Link href="/Trips">My Trips</Link>
-                <Link href="/explore">Explore</Link>
+                <Link href="/trips">My Trips</Link>
+                <Link href="/experience">Explore</Link>
                 <Link href="/login">Login</Link>
                 <Link href="/signup">Signup</Link>
             </nav>
