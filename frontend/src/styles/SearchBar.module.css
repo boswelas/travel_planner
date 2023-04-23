@@ -1,0 +1,25 @@
+
+.SearchBar {
+    border: 0px;
+    border-width: 0px;
+    margin: 0;
+    padding: 5px;
+    }
+
+    .SearchBar input {
+        border: 1px;
+        border-width: 1px;
+        border-color: rgb(180, 180, 180);
+        border-style: solid;
+        border-radius: 5px;
+        min-height: 1em;
+        }
+
+    .SearchBar button {
+        border: 1px;
+        border-width: 1px;
+        border-color: rgb(180, 180, 180);
+        border-style: solid;
+        border-radius: 5px;
+        min-height: 1em;
+        }  
