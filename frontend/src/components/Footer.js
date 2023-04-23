@@ -1,7 +1,8 @@
 const Footer = () => {
     return ( 
         <footer>
-            Travel Planner App for OSU Captstone
+            {/* Commented out the footer for now - feel free to add back if needed*/}
+            {/* Travel Planner App for OSU Captstone */}
         </footer>
      );
 }
