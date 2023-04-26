@@ -89,5 +89,40 @@ def experiences():
 ############################# END route for Experiences #############################
 
 
+############################# BEGIN route for Search #############################
+@app.route("/search", methods=["GET"])
+def search():
+    if request.method == "GET":
+        search_term = request.args.get("search")
+        print(search_term)
+
+        if search_term:
+            query = """SELECT exp.experience_id, exp.title, exp.city, exp.state, exp.country
+                        FROM (
+                            SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, keyword.keyword
+                                FROM experience
+                                JOIN location
+                                ON experience.location_id = location.location_id
+                                JOIN experience_has_keyword
+                                ON experience.experience_id = experience_has_keyword.experience_id
+                                JOIN keyword
+                                ON  experience_has_keyword.keyword_id = keyword.keyword_id
+                            WHERE
+                                MATCH (experience.title) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                                OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                                OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                        ) AS exp"""
+                      
+            cnx = create_connection()
+            cursor = cnx.cursor()
+
+            cursor.execute(query, (search_term, search_term, search_term))
+
+            data = cursor.fetchall()
+
+        return jsonify(data)
+
+############################# END route for Search #############################
+
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
