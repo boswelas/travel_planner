@@ -13,10 +13,10 @@ const Search = () => {
 
     const PerformSearch = async (query) => {
 
-        const res = await fetch(`http://127.0.0.1:5000/search?search=${query}`)
+        const res = await fetch(`https://travel-planner-production.up.railway.app/search?search=${query}`)
         const data = await res.json();
 
-        console.log(`URL: http://127.0.0.1:5000/search?search=${query}`)
+        console.log(`URL: https://travel-planner-production.up.railway.app/search?search=${query}`)
         console.log(res)
         console.log(data)
         setData(data)
