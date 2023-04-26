@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask, jsonify, request, redirect, render_template
 from flask_cors import CORS
 import os
 import mysql.connector
