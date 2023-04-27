@@ -14,10 +14,6 @@ const Search = () => {
         const res = await fetch(`https://travel-planner-production.up.railway.app/search?search=${query}`)
         const data = await res.json();
 
-        console.log(`URL: https://travel-planner-production.up.railway.app/search?search=${query}`)
-        console.log(res)
-        console.log(data)
-        setData(data)
         return data
     }
 
