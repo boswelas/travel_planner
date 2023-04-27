@@ -57,15 +57,17 @@ def experiences():
             # Grab experience form inputs
             title = request.form["title"]
             description = request.form["description"]
-            geo_location = request.form["geo_location"]
-            image = request.form["image"]   # probably not correct syntax!!!
-            keywords = request.form["keywords"]
+            geolocation = request.form["geolocation"]
+            # image = request.form["image"]   # probably not correct syntax!!!
+            avg_rating = request.form["avg_rating"]
 
             # Add data
-            query = "INSERT INTO Experiences (title, description, geo_location, image, keywords) VALUES (%s, %s, %s, %s, %s)"
-            cur = mysql.connection.cursor()
-            cur.execute(query, (title, description, geo_location, image, keywords))
-            mysql.connection.commit()
+            query = "INSERT INTO Experience (title, description, geolocation, avg_rating) VALUES (%s, %s, %s, %s)"
+            
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(query, (title, description, geolocation, avg_rating))
+            cnx.commit()
 
             # Redirect back to experiences
             return redirect("/experiences")
@@ -73,17 +75,20 @@ def experiences():
     # Display experiences using query to grab all experiences in Experiences
     if request.method == "GET":
         search_query = request.query_string.decode()
+        
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
         if search_query:
-            query = f"SELECT * FROM Experiences WHERE MATCH (`title`, `description`, `geo_location`, `image`, `keywords`) AGAINST ('{search_query[2:]}' IN NATURAL LANGUAGE MODE);"
-            cur = mysql.connection.cursor()
-            cur.execute(query)
-            data = cur.fetchall()
+            query = f"SELECT * FROM Experience WHERE MATCH (`title`, `description`, `geolocation`, `avg_rating`) AGAINST ('{search_query[2:]}' IN NATURAL LANGUAGE MODE);"
         else:
-            query1 = "SELECT experience_id, title, description, geo-location, image, keywords FROM experiences"
-            cur = mysql.connection.cursor()
-            cur.execute(query1)
-            data = cur.fetchall()
-        # return render_template("experiences.j2", data=data)   # can be used later
+            query = "SELECT experience_id, location_id, title, description, geolocation, avg_rating FROM experience"
+
+        cur.execute(query)
+        data = cur.fetchall()
+        cur.close()
+        cnx.close()
         return jsonify(data=data)
     
 
@@ -126,4 +131,4 @@ def search():
 ############################# END route for Search #############################
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+    app.run(debug=True, port=os.getenv("PORT", default=5001))
