@@ -7,8 +7,6 @@ const Search = () => {
 
     const router = useRouter()
     const query = router.query
-
-    const [data, setData] = useState([]);
     const [rows, setRows] = useState([]);
 
     const PerformSearch = async (query) => {
@@ -24,9 +22,6 @@ const Search = () => {
     }
 
     const genTable = (dataArrays) => {
-
-        console.log(`Type of data ${typeof dataArrays}`)
-        console.log(`dataArrays: ${dataArrays}`)
 
         const listRows = dataArrays.map((row, index) =>
             <tr key={index}>
