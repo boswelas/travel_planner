@@ -7,7 +7,7 @@ export default function ExperienceTable() {
     async function GetExperienceData() {
         const response = await fetch("https://travel-planner-production.up.railway.app/experiences");
         const jsonData = await response.json();
-        setData(jsonData.result)
+        setData(jsonData.data)
       }
 
     const listRows = data.map((row, index) =>
