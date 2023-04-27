@@ -1,10 +1,6 @@
 import Link from 'next/link'
 import ExperienceTable from '@/components/experience-table'
 
-// export const getStaticProps = async () => {
-
-// }
-
 const Experience = () => {
     return (
         <><div>
