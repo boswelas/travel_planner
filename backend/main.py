@@ -27,6 +27,7 @@ def create_connection():
 
 @app.route('/')
 def index():
+    print("Server is running!")
     return jsonify("Welcome to the Travel Planner backend!")
 
 
@@ -49,28 +50,8 @@ def get_all_users():
     return jsonify(result=result)
 
 ############################# BEGIN route for Experiences #############################
-@app.route("/experiences", methods=["POST", "GET"])
-def experiences():
-    # Insert new experience
-    if request.method == "POST":
-        if request.form.get("add_experience"):
-            # Grab experience form inputs
-            title = request.form["title"]
-            description = request.form["description"]
-            geolocation = request.form["geolocation"]
-            # image = request.form["image"]   # probably not correct syntax!!!
-            avg_rating = request.form["avg_rating"]
-
-            # Add data
-            query = "INSERT INTO Experience (title, description, geolocation, avg_rating) VALUES (%s, %s, %s, %s)"
-            
-            cnx = create_connection()
-            cur = cnx.cursor()
-            cur.execute(query, (title, description, geolocation, avg_rating))
-            cnx.commit()
-
-            # Redirect back to experiences
-            return redirect("/experiences")
+@app.route("/experience", methods=["GET"])
+def experience():
         
     # Display experiences using query to grab all experiences in Experiences
     if request.method == "GET":
@@ -90,6 +71,31 @@ def experiences():
         cur.close()
         cnx.close()
         return jsonify(data=data)
+    
+@app.route("/experience/addNewExperience", methods=["POST"])
+def addNewExperience():
+        # Insert new experience
+    print("Experiences are being triggered")
+    if request.is_json:
+        # Grab experience form inputs
+        data = request.get_json()
+        experience_id = data["experienceID"]
+        location_id = data["locationID"]
+        title = data["title"]
+        description = data["description"]
+        geolocation = data["geolocation"]
+        avg_rating = data["avg_rating"]
+        user_user_id = data["userID"]
+
+        # Add data
+        query = "INSERT INTO Experience (experience_id, location_id, title, description, geolocation, avg_rating, user_user_id) VALUES (%s, %s, %s, %s, %s, %s)"
+        
+        cnx = create_connection()
+        cur = cnx.cursor()
+        cur.execute(query, (experience_id, location_id, title, description, geolocation, avg_rating, user_user_id))
+        cnx.commit()
+
+        return jsonify({"success": True})
     
 
 ############################# END route for Experiences #############################
