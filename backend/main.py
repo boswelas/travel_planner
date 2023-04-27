@@ -98,7 +98,7 @@ def search():
         print(search_term)
 
         if search_term:
-            query = """SELECT exp.experience_id, exp.title, exp.city, exp.state, exp.country
+            query = """SELECT DISTINCT exp.experience_id, exp.title, exp.city, exp.state, exp.country, exp.avg_rating, exp.description
                         FROM (
                             SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, keyword.keyword
                                 FROM experience
