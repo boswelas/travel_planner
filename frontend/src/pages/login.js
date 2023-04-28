@@ -1,20 +1,23 @@
+import Link from "next/link";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+const provider = new GoogleAuthProvider();
+const auth = getAuth();
+
 const Login = () => {
-    return ( 
-        <>
-        <h3>Login page</h3>
-        <form>
-            <div>
-                <label>User Name: </label>
-                <input></input>
-            </div>
-            <div>
-                <label>Password: </label>
-                <input></input>
-            </div>
-            <button>Login</button>
-        </form>
-        </>
-     );
-}
- 
+    const signIn = async () => {
+        const result = await signInWithPopup(auth, provider);
+        const uid = result.user.uid;
+
+    };
+
+    return (
+        <div>
+            <Link href="#">
+                <span onClick={signIn}>Sign in with Google</span>
+            </Link>
+        </div>
+    );
+};
+
 export default Login;
