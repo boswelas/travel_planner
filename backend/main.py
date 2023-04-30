@@ -25,6 +25,7 @@ def create_connection():
 
     return db
 
+
 @app.route('/')
 def index():
     print("Server is running!")
@@ -198,6 +199,25 @@ def signup():
 
 
 ############################# END route for Signup #############################
+
+############################# BEGIN route for GetID #############################
+@app.route('/GetID', methods=['POST'])
+def GetID():
+    if request.method == "POST":
+        data = request.get_json()
+        email = data["email"]
+        query = ("SELECT * FROM user WHERE email = (%s)")
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(query, (email,))
+
+        data = cur.fetchall()
+        cur.close()
+        cnx.close()
+        return jsonify({"user": data})
+    ############################# END route for GetID #############################
 
 
 if __name__ == '__main__':
