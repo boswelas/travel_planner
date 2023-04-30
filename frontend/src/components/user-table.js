@@ -8,16 +8,16 @@ export default function UserTable() {
         const response = await fetch("https://travel-planner-production.up.railway.app/user");
         const jsonData = await response.json();
         setData(jsonData.result)
-      }
+    }
 
     const listRows = data.map((row, index) =>
-      <tr key={index}>
-          <td>{row[0]}</td>
-          <td>{row[1]}</td>
-          <td>{row[2]}</td>
-          <td>{row[3]}</td>
-      </tr>
-  )
+        <tr key={index}>
+            <td>{row[0]}</td>
+            <td>{row[2]}</td>
+            <td>{row[3]}</td>
+            <td>{row[4]}</td>
+        </tr>
+    )
 
     useEffect(() => {
         GetUserData();
@@ -31,7 +31,7 @@ export default function UserTable() {
                     <th>ID</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Birth Day</th>
+                    <th>Birthday</th>
                 </tr>
             </thead>
             <tbody>

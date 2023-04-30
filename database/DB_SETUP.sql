@@ -34,15 +34,14 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `railway`.`user`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`user` (
-  `user_id` INT NOT NULL,
-  `user_name` VARCHAR(45) NOT NULL,
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(100) NOT NULL,
   `first_name` VARCHAR(45) NULL DEFAULT NULL,
   `last_name` VARCHAR(45) NULL DEFAULT NULL,
   `birthday` VARCHAR(45) NULL DEFAULT NULL,
-  `hashed_pw` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE,
-  UNIQUE INDEX `user_name_UNIQUE` (`user_name` ASC) VISIBLE)
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
