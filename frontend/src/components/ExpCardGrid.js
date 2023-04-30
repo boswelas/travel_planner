@@ -3,8 +3,10 @@ import ExpCard from './ExpCard';
 
 const ExpCardGrid = ( {data} ) => {
 
-    const listRows = data.map((row) =>
-        <ExpCard props={row} />
+    const listRows = data.map((row, index) =>
+        <div key={index}> 
+            <ExpCard props={row} />
+        </div>
     )
 
     return ( 
