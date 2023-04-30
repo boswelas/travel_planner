@@ -1,65 +1,45 @@
 import { useRouter } from "next/router";
 import SearchBar from "@/components/SearchBar";
 import React, { useState, useEffect } from 'react';
+import ExpCard from "@/components/ExpCard";
+import ExpCardGrid from "@/components/ExpCardGrid";
 
 
 const Search = () => {
 
     const router = useRouter()
     const query = router.query
-    const [rows, setRows] = useState([]);
+    const [grid, setGrid] = useState([]);
 
     const PerformSearch = async (query) => {
 
-        const res = await fetch(`https://travel-planner-production.up.railway.app/search?search=${query}`)
+        const res = await fetch(`http://127.0.0.1:5000/search?search=${query}`)
         const data = await res.json();
 
         return data
     }
 
-    const genTable = (dataArrays) => {
+    const genGrid = (dataArrays) => {
 
-        const listRows = dataArrays.map((row, index) =>
-            <tr key={index}>
-                <td>{row[1]}</td>
-                <td>{row[2]}</td>
-                <td>{row[3]}</td>
-                <td>{row[4]}</td>
-            </tr>
-        )
+        let temp = <ExpCardGrid data={dataArrays} />
 
-        setRows(listRows)
+        setGrid(temp)
     }
 
     useEffect(() => {
         if(!router.isReady) return;
 
         PerformSearch(query['search'])
-        .then((res) => genTable(res))
+        .then((res) => genGrid(res))
 
     }, [router.isReady])
     
-
     const core = () => {
 
         if (typeof query.search == 'string') {
             // User has input a search
             return (<>
-                        <p>Results for {query.search}:</p>
-                        <table>
-                        <thead>
-                            <tr>
-                                <th>Experience</th>
-                                <th>City</th>
-                                <th>State</th>
-                                <th>Country</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows}
-                        </tbody>
-                    </table>
-                        
+                        {grid}
                     </>
             )
         } else {
