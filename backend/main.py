@@ -121,7 +121,12 @@ def search():
 
             data = cursor.fetchall()
 
-        return jsonify(data)
+        # Convert the data to a dictionary so that it shows up as an object
+        payload = []
+        for row in data:
+            payload.append({'id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4], 'rating': row[5], 'description': row[6]})
+
+        return jsonify(payload)
 
 ############################# END route for Search #############################
 
