@@ -50,13 +50,15 @@ def get_all_users():
     return jsonify(result=result)
 
 ############################# BEGIN route for Experiences #############################
+
+
 @app.route("/experience", methods=["GET"])
 def experience():
-        
+
     # Display experiences using query to grab all experiences in Experiences
     if request.method == "GET":
         search_query = request.query_string.decode()
-        
+
         # Opens connection & cursor
         cnx = create_connection()
         cur = cnx.cursor()
@@ -71,10 +73,11 @@ def experience():
         cur.close()
         cnx.close()
         return jsonify(data=data)
-    
+
+
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
-        # Insert new experience
+    # Insert new experience
     print("Experiences are being triggered")
     if request.is_json:
         # Grab experience form inputs
@@ -89,14 +92,15 @@ def addNewExperience():
 
         # Add data
         query = "INSERT INTO Experience (experience_id, location_id, title, description, geolocation, avg_rating, user_user_id) VALUES (%s, %s, %s, %s, %s, %s)"
-        
+
         cnx = create_connection()
         cur = cnx.cursor()
-        cur.execute(query, (experience_id, location_id, title, description, geolocation, avg_rating, user_user_id))
+        cur.execute(query, (experience_id, location_id, title,
+                    description, geolocation, avg_rating, user_user_id))
         cnx.commit()
 
         return jsonify({"success": True})
-    
+
 
 ############################# END route for Experiences #############################
 
@@ -124,7 +128,7 @@ def search():
                                 OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
                                 OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
                         ) AS exp"""
-                      
+
             cnx = create_connection()
             cursor = cnx.cursor()
 
@@ -135,6 +139,66 @@ def search():
         return jsonify(data)
 
 ############################# END route for Search #############################
+
+############################# BEGIN route for Login #############################
+
+
+@app.route("/login", methods=["POST"])
+def check_user_exists():
+    if request.method == "POST":
+        data = request.get_json()
+        email = data["email"]
+        query = ("SELECT * FROM user WHERE email = (%s)")
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(query, (email,))
+
+        data = cur.fetchall()
+        cur.close()
+        cnx.close()
+        return jsonify({"user": data})
+
+############################# END route for Login #############################
+
+############################# BEGIN route for Signup #############################
+
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    if request.method == "POST":
+        data = request.json
+
+        email = data.get('email')
+        first_name = data.get('firstName')
+        last_name = data.get('lastName')
+        birthday = data.get('birthday')
+
+        cnx = create_connection()
+        cursor = cnx.cursor()
+
+        try:
+            cursor.execute("""
+                INSERT INTO user (email, first_name, last_name, birthday)
+                VALUES ( %s, %s, %s, %s)
+            """, (email, first_name, last_name, birthday))
+
+            cnx.commit()
+            cursor.close()
+            cnx.close()
+
+            return jsonify({'success': True}), 200
+        except Exception as e:
+            cnx.rollback()
+            cursor.close()
+            cnx.close()
+
+            return jsonify({'error': str(e)}), 500
+
+
+############################# END route for Signup #############################
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5001))
