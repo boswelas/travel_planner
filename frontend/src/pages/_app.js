@@ -4,6 +4,8 @@ import { initFirebase } from "@/components/firebase";
 import GetID from "@/components/getID";
 import Layout from "@/components/Layout";
 
+import  '../styles/globals.css';     // Needed for global styles
+
 initFirebase();
 
 export default function App({ Component, pageProps }) {
