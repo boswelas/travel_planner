@@ -39,6 +39,7 @@ const Search = () => {
         if (typeof query.search == 'string') {
             // User has input a search
             return (<>
+                        <h3 class='subheader'>{`Search results for '${query.search}'`}</h3>
                         {grid}
                     </>
             )
@@ -54,8 +55,6 @@ const Search = () => {
 
     return (
         <>
-            <h3>Search Page</h3>
-
             {core(query)}
 
         </>
