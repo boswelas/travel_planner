@@ -51,30 +51,31 @@ def get_all_users():
     return jsonify(result=result)
 
 ############################# BEGIN route for Experiences #############################
-
+# Converts fetched data into dictionary
+def convert_to_dict(cursor, row):
+    result = {}
+    for idx, col in enumerate(cursor.description):
+        result[col[0]] = row[idx]
+    return result
 
 @app.route("/experience", methods=["GET"])
 def experience():
 
-    # Display experiences using query to grab all experiences in Experiences
     if request.method == "GET":
-        search_query = request.query_string.decode()
-
-        # Opens connection & cursor
         cnx = create_connection()
         cur = cnx.cursor()
 
-        if search_query:
-            query = f"SELECT * FROM Experience WHERE MATCH (`title`, `description`, `geolocation`, `avg_rating`) AGAINST ('{search_query[2:]}' IN NATURAL LANGUAGE MODE);"
-        else:
-            query = "SELECT experience_id, location_id, title, description, geolocation, avg_rating FROM experience"
-
+        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
+                    FROM experience
+                    JOIN location
+                    ON experience.location_id = location.location_id"""
+        
         cur.execute(query)
         data = cur.fetchall()
+        data = [convert_to_dict(cur, row) for row in data]
         cur.close()
         cnx.close()
         return jsonify(data=data)
-
 
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
