@@ -18,8 +18,11 @@ const ExpCard = ({props}) => {
             <p className={styles.CardRating}>
                 {rating} / 5
             </p>
-            <p className={styles.UserName}>
+            {/* <p className={styles.UserName}>
                 From: Username
+            </p> */}
+            <p className={styles.CardLocation}>
+                {city}, {state}, {country}
             </p>
             <div className={styles.Photo}>
                 Photo
