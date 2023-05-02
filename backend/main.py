@@ -66,7 +66,7 @@ def experience():
         cnx = create_connection()
         cur = cnx.cursor()
 
-        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.rating, experience.avg_rating, experience.description
+        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
                     FROM experience
                     JOIN location
                     ON experience.location_id = location.location_id"""
