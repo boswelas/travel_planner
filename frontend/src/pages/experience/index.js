@@ -1,15 +1,27 @@
 import Link from 'next/link'
-import ExperienceTable from '@/components/experience-table'
 
-const Experience = () => {
+import ExpCard from '@/components/ExpCard'
+
+export async function getServerSideProps() {
+    const res = await fetch('https://travel-planner-production.up.railway.app/experience');
+    const data = await res.json();
+
+    return {
+        props: {
+            experience: data.data,
+        },
+    };
+}
+
+const Experience = ({ experience }) => {
     return (
-        <><div>
-            <h1>Welcome to the Experience default</h1>
-            <ExperienceTable />
-            <Link href="/experience/addNewExperience">Add New Experience</Link>
-        </div></>
-
+        <div>
+            <h1>Experiences</h1>
+            {experience.map((experience) => (
+                <ExpCard key = {experience.experience_id} props={experience} />
+            ))}
+        </div>
     )
-};
-  
+}
+
 export default Experience;
