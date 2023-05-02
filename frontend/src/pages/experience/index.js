@@ -18,7 +18,7 @@ const Experience = ({ experience }) => {
         <div>
             <h1>Experiences</h1>
             {experience.map((experience) => (
-                <ExpCard key = {experience.experience_id} props={experience} />
+                <ExpCard key={experience.experience_id} props={experience} />
             ))}
         </div>
     )
