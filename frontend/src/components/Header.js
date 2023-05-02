@@ -1,5 +1,5 @@
 import Link from "next/link";
-import styles from '../styles/Nav.module.css'
+import styles from '../styles/Layout.module.css'
 import SearchBar from "./SearchBar";
 import Login from "../pages/login.js";
 import LogOut from "./LogOut.js";

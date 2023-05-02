@@ -1,13 +1,20 @@
 import Footer from "./Footer";
 import Header from "./Header";
 
+import styles from '../styles/Layout.module.css'
 
 const Layout = ({ children, user }) => {
     return (
         <div>
-            <Header user={user} />
-            {children}
-            <Footer />
+            <div className={styles.top}>
+                <Header user={user} />
+            </div>
+            <div className={styles.mid}>
+                {children}
+            </div>
+            <div className={styles.bot}>
+                <Footer />
+            </div>
         </div>
     );
 }
