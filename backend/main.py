@@ -52,6 +52,8 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
+
+
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -59,6 +61,8 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
+
+
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -70,7 +74,7 @@ def experience():
                     FROM experience
                     JOIN location
                     ON experience.location_id = location.location_id"""
-        
+
         cur.execute(query)
         data = cur.fetchall()
         data = [convert_to_dict(cur, row) for row in data]
@@ -79,6 +83,8 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
+
+
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -101,6 +107,8 @@ def get_experience(experience_id):
 
 
 # Post new experience
+
+
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
     # Insert new experience
@@ -165,7 +173,8 @@ def search():
         # Convert the data to a dictionary so that it shows up as an object
         payload = []
         for row in data:
-            payload.append({'id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4], 'rating': row[5], 'description': row[6]})
+            payload.append({'id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
+                           'country': row[4], 'rating': row[5], 'description': row[6]})
 
         return jsonify(payload)
 
@@ -248,6 +257,46 @@ def GetID():
         cnx.close()
         return jsonify({"user": data})
     ############################# END route for GetID #############################
+
+############################# BEGIN route for Trip #############################
+
+
+@app.route('/trip', methods=['POST'])
+def Trip():
+    if request.method == "POST":
+        data = request.get_json()
+        user_id = data["user_id"]
+        query = ("SELECT * FROM trip WHERE user_id = (%s)")
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(query, (user_id,))
+
+        data = cur.fetchall()
+        cur.close()
+        cnx.close()
+        return jsonify({"trip": data})
+
+
+@app.route('/tripDetail', methods=['POST'])
+def TripDetail():
+    if request.method == "POST":
+        data = request.get_json()
+        trip_id = data["trip_id"]
+        query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(query, (trip_id,))
+
+        data = cur.fetchall()
+        print(data)
+        cur.close()
+        cnx.close()
+        return jsonify({"trip": data})
+############################# END route for Trip #############################
 
 
 if __name__ == '__main__':

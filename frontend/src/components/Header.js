@@ -11,7 +11,7 @@ const Header = ({ user }) => {
         <header>
             <nav className={styles.header}>
                 <Link href="/"><div className={styles.logo}>Travel Planner</div></Link>
-                <Link href="/trips">My Trips</Link>
+                <Link href="/trip">My Trips</Link>
                 <Link href="/experience">Explore</Link>
                 <SearchBar />
 
