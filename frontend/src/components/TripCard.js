@@ -12,10 +12,12 @@ const TripCard = ({ props }) => {
                 {name}
             </h3>
             <p className={styles.CardLink}>
-                <Link href={`/trip/${trip_id}`} key={trip_id} trip_id={trip_id} name={name}>
+                <Link href={{
+                    pathname: `/trip/${trip_id}`,
+                    query: { name, user_id }
+                }} as={`/trip/${trip_id}`}>
                     <span>View More</span>
                 </Link>
-
             </p>
         </div>
     );

@@ -1,8 +1,9 @@
 import styles from '../styles/ExpCard.module.css'
 
-const ExpCard = ({props}) => {
 
-    const {id, title, city, state, country, rating, description } = props
+const ExpCard = ({ props }) => {
+
+    const { id, title, city, state, country, avg_rating, description } = props
 
     return (
         <div className={styles.Card}>
@@ -16,7 +17,7 @@ const ExpCard = ({props}) => {
                 <a href={`/experience/${id}`}>View More</a>
             </p>
             <p className={styles.CardRating}>
-                {rating} / 5
+                {avg_rating} / 5
             </p>
             {/* <p className={styles.UserName}>
                 From: Username
@@ -28,7 +29,7 @@ const ExpCard = ({props}) => {
                 Photo
             </div>
         </div>
-     );
+    );
 }
- 
+
 export default ExpCard;

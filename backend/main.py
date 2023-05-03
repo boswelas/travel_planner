@@ -280,6 +280,26 @@ def Trip():
         return jsonify({"trip": data})
 
 
+@app.route('/deleteTrip', methods=['POST'])
+def deleteTrip():
+    if request.method == "POST":
+        data = request.get_json()
+        trip_id = data["trip_id"]
+        user_id = data["user_id"]
+        query = (
+            "SELECT * FROM trip_has_experience WHERE trip_id = (%s) && user_id = (%s)")
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(query, (trip_id, user_id,))
+
+        data = cur.fetchall()
+        cur.close()
+        cnx.close()
+        return jsonify({"trip": data})
+
+
 @app.route('/tripDetail', methods=['POST'])
 def TripDetail():
     if request.method == "POST":
@@ -293,6 +313,7 @@ def TripDetail():
         cur.execute(query, (trip_id,))
 
         data = cur.fetchall()
+        data = [convert_to_dict(cur, row) for row in data]
         print(data)
         cur.close()
         cnx.close()
