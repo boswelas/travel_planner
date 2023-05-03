@@ -87,25 +87,24 @@ def experience():
 
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
-    if request.method == "GET":
-        cnx = create_connection()
-        cur = cnx.cursor()
+    cnx = create_connection()
+    cur = cnx.cursor()
 
-        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
-                    FROM experience
-                    JOIN location
-                    ON experience.location_id = location.location_id
-                    WHERE experience.experience_id = %s"""
+    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                WHERE experience.experience_id = %s"""
 
-        cur.execute(query, (experience_id,))
-        row = cur.fetchone()
+    cur.execute(query, (experience_id,))
+    data = cur.fetchone()
 
-        data = convert_to_dict(cur, row) if row else None
+    data = convert_to_dict(cur, data)
+    cur.close()
+    cnx.close()
 
-        cur.close()
-        cnx.close()
+    return jsonify(data=data)
 
-        return jsonify(data=data) if data else ("Not found", 404)
 
 # Post new experience
 

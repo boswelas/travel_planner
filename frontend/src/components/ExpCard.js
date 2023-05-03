@@ -1,23 +1,31 @@
-import styles from '../styles/ExpCard.module.css'
+import styles from '../styles/ExpCard.module.css';
+import Link from 'next/link';
 
 
-const ExpCard = ({ props }) => {
+const ExpCard = ({props, showViewMore = true }) => {
 
-    const { id, title, city, state, country, avg_rating, description } = props
+    const {experience_id, title, city, state, country, rating, avg_rating, description } = props
 
     return (
         <div className={styles.Card}>
             <h3 className={styles.CardTitle}>
-                <a href={`/experience/${id}`}>{title}</a>
+                <a href={`/experience/${experience_id}`}>{title}</a>
             </h3>
             <p className={styles.CardDescription}>
                 {description}
             </p>
-            <p className={styles.CardLink}>
-                <a href={`/experience/${id}`}>View More</a>
-            </p>
+
+            {showViewMore && (
+                <p className={styles.CardLink}>
+                    <Link href={`/experience/${experience_id}`}>
+                    View More
+                    </Link>
+                </p>
+            )}
+
             <p className={styles.CardRating}>
-                {avg_rating} / 5
+
+                {rating || avg_rating} / 5
             </p>
             {/* <p className={styles.UserName}>
                 From: Username
