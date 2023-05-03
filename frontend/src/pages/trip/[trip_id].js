@@ -10,7 +10,7 @@ const TripDetail = ({ userId }) => {
     useEffect(() => {
         const fetchtripDetailData = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:5001/tripDetail', {
+                const response = await fetch('https://travel-planner-production.up.railway.app/tripDetail', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -22,6 +22,7 @@ const TripDetail = ({ userId }) => {
 
                 const data = await response.json();
                 settripDetailData(data.trip);
+                console.log(tripDetailData);
             } catch (error) {
                 console.error(error);
             }
@@ -39,6 +40,7 @@ const TripDetail = ({ userId }) => {
         return (
             <div>
                 <h1>{name}</h1>
+
                 <ExpCardGrid data={tripDetailData} />
             </div>
         );
