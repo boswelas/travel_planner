@@ -313,7 +313,6 @@ def TripDetail():
 
         data = cur.fetchall()
         data = [convert_to_dict(cur, row) for row in data]
-        print(data)
         cur.close()
         cnx.close()
         return jsonify({"trip": data})
