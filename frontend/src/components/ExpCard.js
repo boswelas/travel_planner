@@ -1,6 +1,7 @@
 import styles from '../styles/ExpCard.module.css';
 import Link from 'next/link';
 
+
 const ExpCard = ({props, showViewMore = true }) => {
 
     const {experience_id, title, city, state, country, rating, avg_rating, description } = props
@@ -23,6 +24,7 @@ const ExpCard = ({props, showViewMore = true }) => {
             )}
 
             <p className={styles.CardRating}>
+
                 {rating || avg_rating} / 5
             </p>
             {/* <p className={styles.UserName}>
@@ -35,7 +37,7 @@ const ExpCard = ({props, showViewMore = true }) => {
                 Photo
             </div>
         </div>
-     );
+    );
 }
- 
+
 export default ExpCard;
