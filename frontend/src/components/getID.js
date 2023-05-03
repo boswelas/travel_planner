@@ -1,6 +1,4 @@
 const GetID = ({ user }) => {
-
-
     if (user) {
         const email = user.email;
         return fetch("https://travel-planner-production.up.railway.app/GetID", {

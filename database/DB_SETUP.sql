@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `railway`.`trip_has_experience` (
   INDEX `fk_trip_has_experience_trip1_idx` (`trip_id` ASC) VISIBLE,
   CONSTRAINT `fk_trip_has_experience_experience1`
     FOREIGN KEY (`experience_id`)
-    REFERENCES `railway`.`experience` (`location_id`),
+    REFERENCES `railway`.`experience` (`experience_id`),
   CONSTRAINT `fk_trip_has_experience_trip1`
     FOREIGN KEY (`trip_id`)
     REFERENCES `railway`.`trip` (`trip_id`))
