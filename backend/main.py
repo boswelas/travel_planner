@@ -334,6 +334,23 @@ def TripDetail():
         cur.close()
         cnx.close()
         return jsonify({"trip": data})
+    
+@app.route('/deleteExperienceFromTrip', methods=['POST'])
+def deleteExperienceFromTrip():
+    if request.method == "POST":
+        data = request.get_json()
+        trip_id = data["trip_id"]
+        experience_id = data["experience_id"]
+
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(
+            "DELETE FROM trip_has_experience WHERE trip_id = %s and experience_id = %s", (trip_id, experience_id))
+
+        cnx.commit()
+ 
+        return jsonify({"success": True})
 ############################# END route for Trip #############################
 
 

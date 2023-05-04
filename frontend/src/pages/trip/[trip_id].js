@@ -40,7 +40,7 @@ const TripDetail = ({ userId }) => {
         return (
             <div>
                 <h1>{name}</h1>
-                <ExpCardGrid data={tripDetailData} />
+                <ExpCardGrid data={tripDetailData} fromTrip={true} trip_id={trip_id}/>
             </div>
         );
     }

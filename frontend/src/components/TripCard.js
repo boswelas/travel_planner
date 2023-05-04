@@ -8,7 +8,7 @@ const TripCard = ({ props }) => {
     const handleDeleteTrip = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:5001/deleteTrip', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/deleteTrip', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

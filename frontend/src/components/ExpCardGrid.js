@@ -1,11 +1,11 @@
 import styles from '../styles/ExpCard.module.css'
 import ExpCard from './ExpCard';
 
-const ExpCardGrid = ({ data }) => {
+const ExpCardGrid = ({ data, fromTrip, trip_id }) => {
 
     const listRows = data.map((row, index) =>
         <div key={index}>
-            <ExpCard props={row} />
+            <ExpCard props={row} fromTrip={fromTrip} trip_id={trip_id}/>
         </div>
     )
 

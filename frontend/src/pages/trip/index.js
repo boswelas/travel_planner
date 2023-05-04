@@ -38,7 +38,7 @@ const Trip = ({ user, userId }) => {
     const handleAddTripSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:5001/addTrip', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/addTrip', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
