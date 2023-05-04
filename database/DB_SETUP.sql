@@ -139,7 +139,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `railway`.`trip`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`trip` (
-  `trip_id` INT NOT NULL,
+  `trip_id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NULL DEFAULT NULL,
   `name` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`trip_id`),
