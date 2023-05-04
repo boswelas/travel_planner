@@ -279,24 +279,42 @@ def Trip():
         return jsonify({"trip": data})
 
 
+@app.route('/addTrip', methods=['POST'])
+def addTrip():
+    if request.method == "POST":
+        data = request.get_json()
+        name = data["name"]
+        user_id = data["user_id"]
+
+        # Opens connection & cursor
+        cnx = create_connection()
+        cur = cnx.cursor()
+
+        cur.execute(
+            "INSERT INTO trip (name, user_id) VALUES (%s, %s)", (name, user_id))
+        cnx.commit()
+
+        return jsonify({"success": True})
+
+
 @app.route('/deleteTrip', methods=['POST'])
 def deleteTrip():
     if request.method == "POST":
         data = request.get_json()
         trip_id = data["trip_id"]
         user_id = data["user_id"]
-        query = (
-            "SELECT * FROM trip_has_experience WHERE trip_id = (%s) && user_id = (%s)")
-        # Opens connection & cursor
+
         cnx = create_connection()
         cur = cnx.cursor()
 
-        cur.execute(query, (trip_id, user_id,))
+        cur.execute(
+            "DELETE FROM trip_has_experience WHERE trip_id = %s", (trip_id,))
+        cur.execute(
+            "DELETE FROM trip WHERE trip_id = %s and user_id = %s", (trip_id, user_id))
 
-        data = cur.fetchall()
-        cur.close()
-        cnx.close()
-        return jsonify({"trip": data})
+        cnx.commit()
+
+        return jsonify({"success": True})
 
 
 @app.route('/tripDetail', methods=['POST'])

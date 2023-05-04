@@ -5,6 +5,26 @@ import Link from 'next/link';
 const TripCard = ({ props }) => {
     const [trip_id, user_id, name] = props;
 
+    const handleDeleteTrip = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch('http://127.0.0.1:5001/deleteTrip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    trip_id: trip_id,
+                    user_id: user_id
+                }),
+            });
+
+            const data = await response.json();
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <div className={styles.Card}>
@@ -19,6 +39,9 @@ const TripCard = ({ props }) => {
                     <span>View More</span>
                 </Link>
             </p>
+            <div>
+                <button onClick={handleDeleteTrip}>Delete Trip</button>
+            </div>
         </div>
     );
 }
