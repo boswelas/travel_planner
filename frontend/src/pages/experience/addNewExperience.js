@@ -11,8 +11,8 @@ const ExperienceForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-            const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+            // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
