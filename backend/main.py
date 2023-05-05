@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, request, redirect, render_template
-from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 import mysql.connector
+import uuid
 
 app = Flask(__name__)
 CORS(app)
@@ -52,8 +52,6 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
-
-
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -61,8 +59,6 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
-
-
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -83,8 +79,6 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
-
-
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -107,34 +101,36 @@ def get_experience(experience_id):
 
 
 # Post new experience
-
-
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
-    # Insert new experience
-    print("Experiences are being triggered")
-    if request.is_json:
-        # Grab experience form inputs
+    if request.method == "POST":
         data = request.get_json()
-        experience_id = data["experienceID"]
-        location_id = data["locationID"]
         title = data["title"]
         description = data["description"]
         geolocation = data["geolocation"]
-        avg_rating = data["avg_rating"]
-        user_user_id = data["userID"]
-
-        # Add data
-        query = "INSERT INTO Experience (experience_id, location_id, title, description, geolocation, avg_rating, user_user_id) VALUES (%s, %s, %s, %s, %s, %s)"
-
+        keywords = data["keywords"]
+        user_user_id = data["user_user_id"]
+        location_id = data["location_id"]
+        experience_id = data["experience_id"]
+        
         cnx = create_connection()
         cur = cnx.cursor()
-        cur.execute(query, (experience_id, location_id, title,
-                    description, geolocation, avg_rating, user_user_id))
+
+        # INSERT INTO location 
+
+        # INSERT INTO experience
+        cur.execute('INSERT INTO experience (experience_id, user_user_id, location_id, title, description, geolocation) VALUES (%s, %s, %s, %s, %s, ST_PointFromText("POINT(%s %s)"))', (experience_id, user_user_id, location_id, title, description, float(geolocation[1]), float(geolocation[0])))
+
+        experience_id = cur.lastrowid
+
+        # INSERT INTO keywords
+        for keyword in keywords:
+            cur.execute('INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
+            keyword_id = cur.lastrowid
+            cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)', (experience_id, keyword_id))
+
         cnx.commit()
-
-        return jsonify({"success": True})
-
+        return jsonify({"experience_id": experience_id})
 
 ############################# END route for Experiences #############################
 
