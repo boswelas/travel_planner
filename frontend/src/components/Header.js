@@ -1,12 +1,12 @@
 import Link from "next/link";
 import styles from '../styles/Layout.module.css'
 import SearchBar from "./SearchBar";
-import Login from "../pages/login.js";
-import LogOut from "./LogOut.js";
+import { useAuth } from '@/components/AuthContext.js';
 
 
-const Header = ({ user }) => {
 
+const Header = () => {
+    const { user, login, logout } = useAuth();
     return (
         <header>
             <nav className={styles.header}>
@@ -18,10 +18,14 @@ const Header = ({ user }) => {
                 {user ? (
                     <div>
                         <h4>Welcome {user.displayName}</h4>
-                        <LogOut />
+                        <Link href="/">
+                            <span onClick={logout}>Sign out</span>
+                        </Link>
                     </div>
                 ) : (
-                    <Login />
+                    <Link href="/">
+                        <span onClick={login}>Sign In With Google</span>
+                    </Link>
                 )}
             </nav>
         </header>
