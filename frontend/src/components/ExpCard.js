@@ -2,7 +2,7 @@ import styles from '../styles/ExpCard.module.css';
 import Link from 'next/link';
 
 
-const ExpCard = ({ props, showViewMore = true, fromTrip, trip_id }) => {
+const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
 
     const { experience_id, title, city, state, country, rating, avg_rating, description } = props
     console.log(fromTrip);
@@ -46,13 +46,18 @@ const ExpCard = ({ props, showViewMore = true, fromTrip, trip_id }) => {
                 </p>
             )}
 
+            {showBackButton && (
+                <p className={styles.CardLink}>
+                    <Link href='/experience'>
+                        Go Back
+                    </Link>
+                </p>
+            )}
+
             <p className={styles.CardRating}>
 
                 {rating || avg_rating} / 5
             </p>
-            {/* <p className={styles.UserName}>
-                From: Username
-            </p> */}
             <p className={styles.CardLocation}>
                 {city}, {state}, {country}
             </p>
