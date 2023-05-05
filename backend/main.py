@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
 import jwt
+import requests
 import mysql.connector
 from datetime import datetime
 from cryptography.x509 import load_pem_x509_certificate
@@ -38,14 +39,13 @@ def verify_token(id_token):
         public_key = cert.public_key()
         payload = jwt.decode(id_token, public_key, algorithms=[
                              alg], audience='travelapp-9e26b', issuer="https://securetoken.google.com/travelapp-9e26b", options={"verify_exp": True, "verify_iat": True})
-
         # Check if the token has expired
         if payload["exp"] < datetime.utcnow().timestamp():
             # Token has expired
             return False
         else:
             # Token is valid
-            return payload['email']
+            return payload['user_id']
 
     except jwt.ExpiredSignatureError:
         # Token has expired
@@ -325,16 +325,16 @@ def GetID():
 def Trip():
     if request.method == "POST":
         header = request.headers.get('Authorization')
-        token_email = verify_token(header)
+        token_uid = verify_token(header)
         data = request.get_json()
-        email = data["email"]
-        if token_email == email:
+        user_id = data["user_id"]
+        if token_uid == user_id:
             query = (
-                "SELECT * FROM trip WHERE user_id = (SELECT user_id FROM user WHERE email = %s)")
+                "SELECT * FROM trip WHERE user_id = %s")
             # Opens connection & cursor
             cnx = create_connection()
             cur = cnx.cursor()
-            cur.execute(query, (email,))
+            cur.execute(query, (user_id,))
 
             data = cur.fetchall()
             cur.close()
@@ -347,18 +347,18 @@ def Trip():
 def addTrip():
     if request.method == "POST":
         header = request.headers.get('Authorization')
-        token_email = verify_token(header)
+        token_uid = verify_token(header)
         data = request.get_json()
         name = data["name"]
-        email = data["email"]
-        if token_email == email:
-            query = "INSERT INTO trip (name, user_id) VALUES (%s, (SELECT user_id FROM user WHERE email = %s))"
+        user_id = data["user_id"]
+        if token_uid == user_id:
+            query = "INSERT INTO trip (name, user_id) VALUES (%s, %s)"
             # Opens connection & cursor
             cnx = create_connection()
             cur = cnx.cursor()
 
             cur.execute(
-                query, (name, email))
+                query, (name, user_id))
             cnx.commit()
 
         return jsonify({"success": True})
@@ -389,20 +389,18 @@ def deleteTrip():
 def TripDetail():
     if request.method == "POST":
         header = request.headers.get('Authorization')
-        token_email = verify_token(header)
+        token_uid = verify_token(header)
         data = request.get_json()
         trip_id = data["trip_id"]
-        token_user_id = ("SELECT user_id FROM user WHERE email = %s")
-        trip_user_id = ("SELECT user_id FROM trip WHERE trip_id = %s")
+        check_uid = "SELECT user_id FROM trip WHERE trip_id = %s"
         query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
         # Opens connection & cursor
         cnx = create_connection()
         cur = cnx.cursor()
-        cur.execute(token_user_id, (token_email,))
-        token_user = cur.fetchall()
-        cur.execute(trip_user_id, (trip_id,))
-        trip_user = cur.fetchall()
-        if token_user == trip_user:
+        cur.execute(check_uid, (trip_id,))
+        trip_user_id = cur.fetchall()
+
+        if token_uid == trip_user_id[0][0]:
             cur.execute(query, (trip_id,))
             data = cur.fetchall()
             data = [convert_to_dict(cur, row) for row in data]

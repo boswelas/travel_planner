@@ -20,11 +20,12 @@ const Trip = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        email: user.email,
+                        user_id: user.uid,
                     }),
                 });
 
                 const data = await response.json();
+                console.log(data);
                 console.log(data.trip);
                 if (data.trip === "invalid") {
                     setTripData([]);
@@ -54,7 +55,7 @@ const Trip = () => {
 
                 },
                 body: JSON.stringify({
-                    email: user.email,
+                    user_id: user.uid,
                     name: newTripTitle,
                 }),
             });

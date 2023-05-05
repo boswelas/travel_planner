@@ -11,3 +11,4 @@ six==1.16.0
 Werkzeug==1.0.1
 pyjwt==2.6.0
 cryptography==40.0.2
+requests==2.26.0
