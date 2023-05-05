@@ -1,8 +1,12 @@
-from flask import Flask, jsonify, request, redirect, render_template
-from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import jwt
 import mysql.connector
+from datetime import datetime
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
+
 
 app = Flask(__name__)
 CORS(app)
@@ -12,6 +16,45 @@ PORT = os.environ['MYSQLPORT']
 USER = os.environ['MYSQLUSER']
 PASSWORD = os.environ['MYSQLPASSWORD']
 DATABASE = os.environ['MYSQLDATABASE']
+
+
+def verify_token(id_token):
+    if id_token.startswith('Bearer '):
+        id_token = id_token.split(' ')[1]
+    header = jwt.get_unverified_header(id_token)
+    alg = header["alg"]
+    kid = header["kid"]
+
+# Fetch the public key from Firebase
+    response = requests.get(
+        f"https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com")
+    response.raise_for_status()
+    keys = response.json()
+    pub_key = keys[kid]
+
+    # Load the public key and verify the token
+    try:
+        cert = load_pem_x509_certificate(pub_key.encode(), default_backend())
+        public_key = cert.public_key()
+        payload = jwt.decode(id_token, public_key, algorithms=[
+                             alg], audience='travelapp-9e26b', issuer="https://securetoken.google.com/travelapp-9e26b", options={"verify_exp": True, "verify_iat": True})
+
+        # Check if the token has expired
+        if payload["exp"] < datetime.utcnow().timestamp():
+            # Token has expired
+            return False
+        else:
+            # Token is valid
+            return payload['email']
+
+    except jwt.ExpiredSignatureError:
+        # Token has expired
+        print("Token has expired")
+        return False
+    except Exception as e:
+        # Token is invalid
+        print("Token is invalid: ", e)
+        return False
 
 
 def create_connection():
@@ -187,15 +230,32 @@ def search():
 def check_user_exists():
     if request.method == "POST":
         data = request.get_json()
+        uid = data["uid"]
         email = data["email"]
-        query = ("SELECT * FROM user WHERE email = (%s)")
+        displayName = data["displayName"]
+        query = ("SELECT * FROM user WHERE user_id = (%s)")
         # Opens connection & cursor
         cnx = create_connection()
         cur = cnx.cursor()
 
-        cur.execute(query, (email,))
-
+        cur.execute(query, (uid,))
         data = cur.fetchall()
+        if (len(data) == 0):
+            try:
+                cur.execute("""
+                    INSERT INTO user (user_id, email, displayName)
+                    VALUES ( %s, %s, %s)
+                """, (uid, email, displayName))
+
+                cnx.commit()
+                cur.close()
+                cnx.close()
+
+            except Exception as e:
+                cnx.rollback()
+                cur.close()
+                cnx.close()
+
         cur.close()
         cnx.close()
         return jsonify({"user": data})
@@ -264,37 +324,45 @@ def GetID():
 @app.route('/trip', methods=['POST'])
 def Trip():
     if request.method == "POST":
+        header = request.headers.get('Authorization')
+        token_email = verify_token(header)
         data = request.get_json()
-        user_id = data["user_id"]
-        query = ("SELECT * FROM trip WHERE user_id = (%s)")
-        # Opens connection & cursor
-        cnx = create_connection()
-        cur = cnx.cursor()
+        email = data["email"]
+        if token_email == email:
+            query = (
+                "SELECT * FROM trip WHERE user_id = (SELECT user_id FROM user WHERE email = %s)")
+            # Opens connection & cursor
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(query, (email,))
 
-        cur.execute(query, (user_id,))
-
-        data = cur.fetchall()
-        cur.close()
-        cnx.close()
-        return jsonify({"trip": data})
+            data = cur.fetchall()
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
+        return jsonify({"trip": "invalid"})
 
 
 @app.route('/addTrip', methods=['POST'])
 def addTrip():
     if request.method == "POST":
+        header = request.headers.get('Authorization')
+        token_email = verify_token(header)
         data = request.get_json()
         name = data["name"]
-        user_id = data["user_id"]
+        email = data["email"]
+        if token_email == email:
+            query = "INSERT INTO trip (name, user_id) VALUES (%s, (SELECT user_id FROM user WHERE email = %s))"
+            # Opens connection & cursor
+            cnx = create_connection()
+            cur = cnx.cursor()
 
-        # Opens connection & cursor
-        cnx = create_connection()
-        cur = cnx.cursor()
-
-        cur.execute(
-            "INSERT INTO trip (name, user_id) VALUES (%s, %s)", (name, user_id))
-        cnx.commit()
+            cur.execute(
+                query, (name, email))
+            cnx.commit()
 
         return jsonify({"success": True})
+    return jsonify({"success": False})
 
 
 @app.route('/deleteTrip', methods=['POST'])
@@ -320,21 +388,33 @@ def deleteTrip():
 @app.route('/tripDetail', methods=['POST'])
 def TripDetail():
     if request.method == "POST":
+        header = request.headers.get('Authorization')
+        token_email = verify_token(header)
         data = request.get_json()
         trip_id = data["trip_id"]
+        token_user_id = ("SELECT user_id FROM user WHERE email = %s")
+        trip_user_id = ("SELECT user_id FROM trip WHERE trip_id = %s")
         query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
         # Opens connection & cursor
         cnx = create_connection()
         cur = cnx.cursor()
+        cur.execute(token_user_id, (token_email,))
+        token_user = cur.fetchall()
+        cur.execute(trip_user_id, (trip_id,))
+        trip_user = cur.fetchall()
+        if token_user == trip_user:
+            cur.execute(query, (trip_id,))
+            data = cur.fetchall()
+            data = [convert_to_dict(cur, row) for row in data]
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
+        else:
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": "invalid"})
 
-        cur.execute(query, (trip_id,))
 
-        data = cur.fetchall()
-        data = [convert_to_dict(cur, row) for row in data]
-        cur.close()
-        cnx.close()
-        return jsonify({"trip": data})
-    
 @app.route('/deleteExperienceFromTrip', methods=['POST'])
 def deleteExperienceFromTrip():
     if request.method == "POST":
@@ -349,7 +429,7 @@ def deleteExperienceFromTrip():
             "DELETE FROM trip_has_experience WHERE trip_id = %s and experience_id = %s", (trip_id, experience_id))
 
         cnx.commit()
- 
+
         return jsonify({"success": True})
 ############################# END route for Trip #############################
 
