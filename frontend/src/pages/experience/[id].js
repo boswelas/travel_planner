@@ -23,7 +23,7 @@ const ExperienceDetail = ({ experience }) => {
     return (
         <div>
             <h1>{experience.title}</h1>
-            <ExpCard props={experience} showViewMore={false} />
+            <ExpCard props={experience} showViewMore={false} showBackButton={true} />
         </div>
     );
 };
