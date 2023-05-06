@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import {v4 as uuidv4} from 'uuid';
 
 const ExperienceForm = () => {
     const [title, setTitle] = useState('');
@@ -11,20 +10,16 @@ const ExperienceForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-            const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+            // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    experience_id: uuidv4(),
-                    user_user_id: uuidv4(),
-                    location_id: uuidv4(),
-                    keyword_id: uuidv4(),
                     title,
                     description,
-                    geolocation,
+                    geolocation: geolocation.map(parseFloat),
                     keywords: keywords.split(',').map(keyword => keyword.trim()),
                     image,
                 }),
