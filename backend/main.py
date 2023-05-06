@@ -2,12 +2,12 @@ from flask import Flask, jsonify, request
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-import jwt
-import requests
+# import jwt
+# import requests
 import mysql.connector
-from datetime import datetime
-from cryptography.x509 import load_pem_x509_certificate
-from cryptography.hazmat.backends import default_backend
+# from datetime import datetime
+# from cryptography.x509 import load_pem_x509_certificate
+# from cryptography.hazmat.backends import default_backend
 
 
 app = Flask(__name__)
@@ -153,17 +153,16 @@ def addNewExperience():
         description = data["description"]
         geolocation = data["geolocation"]
         keywords = data["keywords"]
-        user_user_id = data["user_user_id"]
-        location_id = data["location_id"]
-        experience_id = data["experience_id"]
         
         cnx = create_connection()
         cur = cnx.cursor()
 
         # INSERT INTO location 
+        # cur.execute('INSERT INTO location (lat, lng) VALUES (%s, %s)', (geolocation['lat'], geolocation['lng']))
+        # location_id = cur.lastrowid
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (experience_id, user_user_id, location_id, title, description, geolocation) VALUES (%s, %s, %s, %s, %s, ST_PointFromText("POINT(%s %s)"))', (experience_id, user_user_id, location_id, title, description, float(geolocation[1]), float(geolocation[0])))
+        cur.execute('INSERT INTO experience (title, description, location_id) VALUES (%s, %s, %s)', (title, description, location_id))
 
         experience_id = cur.lastrowid
 
