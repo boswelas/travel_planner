@@ -16,12 +16,14 @@ const Header = () => {
                 <SearchBar />
 
                 {user ? (
-                    <div>
+                    <>
                         <h4>Welcome {user.displayName}</h4>
-                        <Link href="/">
-                            <span onClick={logout}>Sign out</span>
-                        </Link>
-                    </div>
+                        <div>
+                            <Link href="/">
+                                <span onClick={logout}>Sign out</span>
+                            </Link>
+                        </div>
+                    </>
                 ) : (
                     <Link href="/">
                         <span onClick={login}>Sign In With Google</span>
