@@ -2,12 +2,12 @@ from flask import Flask, jsonify, request
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-# import jwt
-# import requests
+import jwt
+import requests
 import mysql.connector
-# from datetime import datetime
-# from cryptography.x509 import load_pem_x509_certificate
-# from cryptography.hazmat.backends import default_backend
+from datetime import datetime
+from cryptography.x509 import load_pem_x509_certificate
+from cryptography.hazmat.backends import default_backend
 
 
 app = Flask(__name__)
