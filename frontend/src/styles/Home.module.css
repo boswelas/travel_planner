@@ -1,0 +1,61 @@
+
+.HomePicContainer {
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 90%;
+  height: 35em;
+  border-radius: 20px;
+}
+
+.HeaderContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1;
+}
+
+.header {
+    float: center;
+    text-align: center;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    min-width: 100%;
+  }
+
+  .header a {
+    margin-left: 40px;
+    margin-right: 40px;
+
+  }
+
+  .header .logo {
+    color: black;
+    margin-right: auto;
+    font-size: x-large;
+  }
+
+  .top {
+    padding: 1%
+  }
+
+    .top a {
+      color: rgb(255, 255, 255);
+      font-weight: bold;
+      text-decoration: none;
+      font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    }
+
+    .top a:hover{
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-decoration-style: solid;
+    }
+
+
