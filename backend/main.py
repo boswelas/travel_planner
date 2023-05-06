@@ -443,7 +443,7 @@ def LatestExp():
                 FROM experience
                 JOIN location
                 ON experience.location_id = location.location_id
-                ORDER BY experience.experience_id
+                ORDER BY experience.experience_id DESC
                 LIMIT %s"""
 
         cnx = create_connection()
