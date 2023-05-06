@@ -7,10 +7,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/router";
 import ExpCardGrid from '@/components/ExpCardGrid'
 
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ['latin'] })
 
-export default function Home() {
+export default function Home({ user }) {
 
     const router = useRouter()
     const query = router.query
@@ -50,6 +51,9 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <div className={styles.HomePic}>
+          <div className={styles.top}>
+                <Header user={user} />
+            </div>
           PICTURE
         </div>
         <h3 class='subheader'>
