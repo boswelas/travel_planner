@@ -3,11 +3,43 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 
-import UserTable from '@/components/user-table'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/router";
+import ExpCardGrid from '@/components/ExpCardGrid'
+
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+    const router = useRouter()
+    const query = router.query
+    const [grid, setGrid] = useState([]);
+
+    const PerformSearch = async (query) => {
+
+      const res = await fetch(`https://travel-planner-production.up.railway.app/LatestExp`)
+      // const res = await fetch(`http://127.0.0.1:5001/LatestExp`)
+      const data = await res.json();
+
+      return data
+  }
+
+  const genGrid = (dataArrays) => {
+
+      let temp = <ExpCardGrid data={dataArrays} />
+
+      setGrid(temp)
+  }
+
+  useEffect(() => {
+      if(!router.isReady) return;
+
+      PerformSearch(query['search'])
+      .then((res) => genGrid(res))
+
+  }, [router.isReady])
+
   return (
     <>
       <Head>
@@ -17,10 +49,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <h1>Travel Planner</h1>
-
-        <UserTable />
-
+        <div className={styles.HomePic}>
+          PICTURE
+        </div>
+        <h3 class='subheader'>
+          Latest Experiences...
+        </h3>
+        <div>
+          {grid}
+        </div>
       </main>
     </>
   )
