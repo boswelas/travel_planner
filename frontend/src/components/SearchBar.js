@@ -4,17 +4,21 @@ const SearchBar = () => {
     return ( 
         <>
             <form className={styles.SearchBar} action="/search">
-                <input className={styles.SearchBar}
-                    type="text"
-                    id="search_id"
-                    name="search"
-                    placeholder='Search'
-                    required
-                />
 
-                {/* <button className={styles.SearchBar} type="submit">
+                <div className={styles.SearchContainer}>
+                    <input
+                        className={styles.SearchInput}
+                        type="text"
+                        id="search_id"
+                        name="search"
+                        placeholder="Search"
+                        required
+                    />
+
+                    <button className={styles.SearchButton} type="submit">
                     Search
-                </button> */}
+                    </button>
+                </div>
             </form>
         </>
      );
