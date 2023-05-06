@@ -1,15 +1,24 @@
 
-
-.HomePic {
-    background-color: rgb(134, 134, 245);
-    min-width: 80%;
-    min-height: 40%;
-    height: 30em;
-    border-radius: 20px;
-    margin-top: 1em;
-    margin-bottom: 1em;
+.HomePicContainer {
+  position: relative;
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 90%;
+  height: 35em;
+  border-radius: 20px;
 }
 
+.HeaderContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1;
+}
 
 .header {
     float: center;
@@ -21,8 +30,8 @@
   }
 
   .header a {
-    margin-left: 80px;
-    margin-right: 80px;
+    margin-left: 40px;
+    margin-right: 40px;
 
   }
 
