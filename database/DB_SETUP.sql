@@ -34,11 +34,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `railway`.`user`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`user` (
-  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` VARCHAR(128) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
-  `first_name` VARCHAR(45) NULL DEFAULT NULL,
-  `last_name` VARCHAR(45) NULL DEFAULT NULL,
-  `birthday` VARCHAR(45) NULL DEFAULT NULL,
+  `displayName` VARCHAR(50) NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
@@ -57,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `railway`.`experience` (
   `description` VARCHAR(1024) NULL DEFAULT NULL,
   `geolocation` POINT NULL DEFAULT NULL,
   `avg_rating` FLOAT NULL DEFAULT NULL,
-  `user_user_id` INT NOT NULL,
+  `user_user_id` VARCHAR(128) NOT NULL,
   PRIMARY KEY (`experience_id`, `location_id`, `user_user_id`),
   UNIQUE INDEX `experience_id_UNIQUE` (`experience_id` ASC) VISIBLE,
   INDEX `fk_experience_location1_idx` (`location_id` ASC) VISIBLE,
@@ -140,7 +138,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `railway`.`trip` (
   `trip_id` INT NOT NULL AUTO_INCREMENT,
-  `user_id` INT NULL DEFAULT NULL,
+  `user_id` VARCHAR(128) NULL DEFAULT NULL,
   `name` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`trip_id`),
   UNIQUE INDEX `trip_id_UNIQUE` (`trip_id` ASC) VISIBLE,

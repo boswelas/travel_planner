@@ -1,3 +1,4 @@
+import styles from '../../styles/ExpCard.module.css';
 import Link from 'next/link'
 
 import ExpCard from '@/components/ExpCard'
@@ -17,9 +18,15 @@ const Experience = ({ experience }) => {
     return (
         <div>
             <h1>Experiences</h1>
+            <p className={styles.CardLink}>
+                <Link href="/experience/addNewExperience">
+                    Add New Experience
+                </Link>
+            </p>
             {experience.map((experience) => (
                 <ExpCard key={experience.experience_id} props={experience} />
             ))}
+
         </div>
     )
 }

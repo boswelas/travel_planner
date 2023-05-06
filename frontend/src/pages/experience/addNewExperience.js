@@ -1,70 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-const Experience = () => {
-    const [formData, setFormData] = useState({
-        experienceID: '',
-        locationID: '',
-        title: '',
-        // location: '',
-        description: '',
-        geoLocation: '',
-        rating: '1',
-        userID: '',
-    });
+const ExperienceForm = () => {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [geolocation, setGeolocation] = useState([0, 0]);
+    const [keywords, setKeywords] = useState('');
+    const [image, setImage] = useState(null);
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value});
-    };
-
-    const handleSubmit = async (e) => {
-        // e.preventDefault();
-        // console.log(formData);
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         try {
-            const response = await fetch('/experience/addNewExperience', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+            // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    title,
+                    description,
+                    geolocation: geolocation.map(parseFloat),
+                    keywords: keywords.split(',').map(keyword => keyword.trim()),
+                    image,
+                }),
             });
-            console.log(response, 'RESPONSE');
-            if (response.ok) {
-                window.location.href = '/experience';
-            }
+
+            const data = await response.json();
+            console.log('New experience added with ID:', data.experience_id);
+
+            window.location.href = `/experience/${data.experience_id}`;
+
         } catch (error) {
-            console.error('Error submitting experience:', error);
+            console.error(error);
         }
-    }
+    };
 
     return (
-    <><h1>Add a new experience!</h1>
-    <form onSubmit={handleSubmit}>
-            <label htmlFor="experienceID">Experience ID:</label>
-            <input type="text" id="experienceID" name="experienceID" value={formData.experienceID} onChange={handleChange}/>
-            <label htmlFor="locationID">Location ID:</label>
-            <input type="text" id="locationID" name="locationID" value={formData.locationID} onChange={handleChange}/>
-            <label htmlFor="title">Experience Title:</label>
-            <input type="text" id="title" name="title" value={formData.title} onChange={handleChange}/>
-            {/* <label htmlFor="location">Location:</label>
-            <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} /> */}
-            <label htmlFor="description">Description:</label>
-            <input type="text" id="description" name="description" value={formData.description} onChange={handleChange} />
-            <label htmlFor="geoLocation">geoLocation:</label>
-            <input type="text" id="geoLocation" name="geoLocation" value={formData.geoLocation} onChange={handleChange} />
-            <label htmlFor="rating">Rating:</label>
-            <select name="rating" id="rating" value={formData.rating} onChange={handleChange}>
-                <option value="1">1 star</option>
-                <option value="2">2 star</option>
-                <option value="3">3 star</option>
-                <option value="4">4 star</option>
-                <option value="5">5 star</option>
-            </select>
-            <label htmlFor="userID">UserID:</label>
-            <input type="text" id="userID" name="userID" value={formData.userID} onChange={handleChange}/>
-            <button type="submit">Submit</button>
-            <button type="button" onClick={() => window.history.back()}>Cancel</button>
-        </form></>
-    )
+        <div>
+            <h2>Create New Experience</h2>
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Experience Title:
+                    <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
+                </label>
+                <br />
+                <label>
+                    Description:
+                    <textarea value={description} onChange={(event) => setDescription(event.target.value)} />
+                </label>
+                <br />
+                <label>
+                    Geolocation (latitude, longitude):
+                    <input type="text" value={geolocation[0]} onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
+                    <input type="text" value={geolocation[1]} onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
+                </label>
+                <br />
+                <label>
+                    Keywords (comma-separated):
+                    <input type="text" value={keywords} onChange={(event) => setKeywords(event.target.value)} />
+                </label>
+                <br />
+                <label>
+                    Image:
+                    <input type="file" accept="image/*" onChange={(event) => setImage(event.target.files[0])} />
+                </label>
+                <br />
+                <br />
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    );
 };
-  
-export default Experience;
+
+export default ExperienceForm;
+
+
+
