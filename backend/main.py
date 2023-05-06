@@ -353,6 +353,41 @@ def deleteExperienceFromTrip():
         return jsonify({"success": True})
 ############################# END route for Trip #############################
 
+############################# BEGIN route for Latest Experience #############################
+@app.route("/LatestExp", methods=["GET"])
+def LatestExp():
+    if request.method == "GET":
+        search_term = request.args.get("count")
+        print(search_term)
+
+        if search_term is None:
+            # Defaults to 3
+            search_term = 3
+
+        query = """
+                SELECT DISTINCT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                ORDER BY experience.experience_id
+                LIMIT %s"""
+
+        cnx = create_connection()
+        cursor = cnx.cursor()
+
+        cursor.execute(query, (search_term,))
+
+        data = cursor.fetchall()
+
+        # Convert the data to a dictionary so that it shows up as an object
+        payload = []
+        for row in data:
+            payload.append({'id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
+                           'country': row[4], 'rating': row[5], 'description': row[6]})
+
+        return jsonify(payload)
+
+############################# END route for Search #############################
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5001))
