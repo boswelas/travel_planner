@@ -1,0 +1,11 @@
+
+
+.HomePic {
+    background-color: blue;
+    min-width: 80%;
+    min-height: 40%;
+    height: 30em;
+    border-radius: 20px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
