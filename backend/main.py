@@ -9,6 +9,8 @@ from datetime import datetime
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 
+from opencage.geocoder import OpenCageGeocode
+
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +20,7 @@ PORT = os.environ['MYSQLPORT']
 USER = os.environ['MYSQLUSER']
 PASSWORD = os.environ['MYSQLPASSWORD']
 DATABASE = os.environ['MYSQLDATABASE']
+GEOCAGE_API = os.environ['GEOCAGE_API']
 
 
 def verify_token(id_token):
@@ -153,27 +156,75 @@ def addNewExperience():
         description = data["description"]
         geolocation = data["geolocation"]
         keywords = data["keywords"]
-        
+
+
         cnx = create_connection()
         cur = cnx.cursor()
 
-        # INSERT INTO location 
-        # cur.execute('INSERT INTO location (lat, lng) VALUES (%s, %s)', (geolocation['lat'], geolocation['lng']))
-        # location_id = cur.lastrowid
+        # Location logic
+        location_id = get_or_add_location(geolocation)
+        print(location_id)
+        
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id) VALUES (%s, %s, %s)', (title, description, location_id))
+        # cur.execute('INSERT INTO experience (title, description, location_id) VALUES (%s, %s, %s)', (title, description, location_id))
 
-        experience_id = cur.lastrowid
+        # experience_id = cur.lastrowid
 
-        # INSERT INTO keywords
-        for keyword in keywords:
-            cur.execute('INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
-            keyword_id = cur.lastrowid
-            cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)', (experience_id, keyword_id))
+        # # INSERT INTO keywords
+        # for keyword in keywords:
+        #     cur.execute('INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
+        #     keyword_id = cur.lastrowid
+        #     cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)', (experience_id, keyword_id))
 
+        # cnx.commit()
+        # return jsonify({"experience_id": experience_id})
+        return jsonify({"experience_id": 99})
+
+
+def get_or_add_location(geolocation):
+    """
+    Input a geolocation, returns a location_id
+    Will add location if not already in database.
+    """
+
+    cnx = create_connection()
+    cur = cnx.cursor()
+
+    # Breaks out coordinates
+    lat = geolocation[0]
+    long = geolocation[1]
+    
+    # Pulls info from API
+    OCG = OpenCageGeocode(GEOCAGE_API)
+    results = OCG.reverse_geocode(lat, long)
+    city = results[0]['components']['village']
+    state = results[0]['components']['state']
+    country = results[0]['components']['country']
+
+    # Checks if location exists
+    select_sql = "SELECT location_id FROM location WHERE city = %s AND state = %s AND country = %s"
+    cur.execute(select_sql, (city, state, country))
+    location_id = cur.fetchone()
+    if location_id:
+        return location_id[0]
+    else:
+        # If location doesn't exists, inserts location
+        insert_sql = "INSERT INTO location (city, state, country) VALUES (%s, %s, %s)"
+        cur.execute(insert_sql, (city, state, country))
         cnx.commit()
-        return jsonify({"experience_id": experience_id})
+
+    # Returns the final location_id
+    cur.execute(select_sql, (city, state, country))
+    location_id = cur.fetchone()
+    print(location_id)
+
+    cur.close()
+    cnx.close()
+
+    return location_id[0]
+
+
 
 ############################# END route for Experiences #############################
 
