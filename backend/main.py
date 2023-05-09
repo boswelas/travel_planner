@@ -217,7 +217,6 @@ def get_or_add_location(geolocation):
     # Returns the final location_id
     cur.execute(select_sql, (city, state, country))
     location_id = cur.fetchone()
-    print(location_id)
 
     cur.close()
     cnx.close()
