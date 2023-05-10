@@ -99,6 +99,8 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
+
+
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -106,6 +108,8 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
+
+
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -126,6 +130,8 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
+
+
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -158,9 +164,13 @@ def addNewExperience():
         keywords = data["keywords"]
 
 
+
         cnx = create_connection()
         cur = cnx.cursor()
 
+        # INSERT INTO location
+        # cur.execute('INSERT INTO location (lat, lng) VALUES (%s, %s)', (geolocation['lat'], geolocation['lng']))
+        # location_id = cur.lastrowid
         # Location logic
         location_id = get_or_add_location(geolocation)
         print(location_id)
@@ -377,7 +387,7 @@ def Trip():
         if token_uid == user_id:
             query = (
                 "SELECT * FROM trip WHERE user_id = %s")
-            # Opens connection & cursor
+
             cnx = create_connection()
             cur = cnx.cursor()
             cur.execute(query, (user_id,))
@@ -428,7 +438,11 @@ def deleteTrip():
 
         cnx.commit()
 
+        cur.close()
+        cnx.close()
+
         return jsonify({"success": True})
+    return jsonify({"success": False})
 
 
 @app.route('/tripDetail', methods=['POST'])
@@ -440,7 +454,7 @@ def TripDetail():
         trip_id = data["trip_id"]
         check_uid = "SELECT user_id FROM trip WHERE trip_id = %s"
         query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
-        # Opens connection & cursor
+
         cnx = create_connection()
         cur = cnx.cursor()
         cur.execute(check_uid, (trip_id,))
@@ -459,25 +473,62 @@ def TripDetail():
             return jsonify({"trip": "invalid"})
 
 
+@app.route('/addExperienceToTrip', methods=['POST'])
+def addExperienceToTrip():
+    if request.method == "POST":
+        try:
+            data = request.get_json()
+            header = request.headers.get('Authorization')
+            user_id = verify_token(header)
+            experience_id = data["experience_id"]
+            print("experience id: %s", experience_id)
+            trip_id = data["trip_id"]
+            print("trip id: %s", trip_id)
+            query = "INSERT INTO trip_has_experience (trip_id, experience_id) VALUES (%s, %s)"
+            values = (trip_id, experience_id)
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(query, values)
+            cnx.commit()
+            cur.close()
+            cnx.close()
+
+            return jsonify({"success": True})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)})
+
+    return jsonify({"success": False, "error": "Invalid request method"})
+
+
 @app.route('/deleteExperienceFromTrip', methods=['POST'])
 def deleteExperienceFromTrip():
     if request.method == "POST":
-        data = request.get_json()
-        trip_id = data["trip_id"]
-        experience_id = data["experience_id"]
+        try:
+            data = request.get_json()
+            trip_id = data["trip_id"]
+            experience_id = data["experience_id"]
 
-        cnx = create_connection()
-        cur = cnx.cursor()
+            cnx = create_connection()
+            cur = cnx.cursor()
 
-        cur.execute(
-            "DELETE FROM trip_has_experience WHERE trip_id = %s and experience_id = %s", (trip_id, experience_id))
+            cur.execute(
+                "DELETE FROM trip_has_experience WHERE trip_id = %s AND experience_id = %s", (trip_id, experience_id))
 
-        cnx.commit()
+            cnx.commit()
+            cur.close()
+            cnx.close()
 
-        return jsonify({"success": True})
+            return jsonify({"success": True})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)})
+
+    return jsonify({"success": False, "error": "Invalid request method"})
+
 ############################# END route for Trip #############################
 
 ############################# BEGIN route for Latest Experience #############################
+
+
 @app.route("/LatestExp", methods=["GET"])
 def LatestExp():
     if request.method == "GET":
@@ -512,6 +563,7 @@ def LatestExp():
         return jsonify(payload)
 
 ############################# END route for Search #############################
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5001))

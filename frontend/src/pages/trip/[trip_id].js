@@ -45,7 +45,7 @@ const TripDetail = () => {
     return (
         <div>
             {tripDetailData.length === 0 ? (
-                <p>This page is blank.</p>
+                <p>No experiences to show.</p>
             ) : (
                 <>
                     <h1>{name}</h1>
