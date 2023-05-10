@@ -50,7 +50,7 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
 
             {showBackButton && (
                 <p className={styles.CardLink}>
-                    <Link href='/experience'>
+                    <Link href="javascript:history.back()">
                         Go Back
                     </Link>
                 </p>

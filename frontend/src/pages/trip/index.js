@@ -100,8 +100,6 @@ const Trip = () => {
         <div>
             {!user ? (
                 <h1>Please Log In</h1>
-            ) : tripData.length === 0 ? (
-                <h1>No trips saved.</h1>
             ) : (
                 <>
                     <h1>My Trips</h1>
