@@ -10,8 +10,8 @@ const ExperienceForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-            const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+            // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,8 +59,8 @@ const ExperienceForm = () => {
                 <br />
                 <label>
                     Geolocation (latitude, longitude):
-                    <input type="text" value={geolocation[0]} onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
-                    <input type="text" value={geolocation[1]} onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
+                    <input type="number" value={geolocation[0]} onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
+                    <input type="number" value={geolocation[1]} onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
                 </label>
                 <br />
                 <label>
@@ -84,6 +84,3 @@ const ExperienceForm = () => {
 };
 
 export default ExperienceForm;
-
-
-
