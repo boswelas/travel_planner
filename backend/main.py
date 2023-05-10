@@ -138,12 +138,11 @@ def get_experience(experience_id):
     cnx = create_connection()
     cur = cnx.cursor()
 
-    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, GROUP_CONCAT(keyword.keyword) as keywords
-            FROM experience
-            JOIN location ON experience.location_id = location.location_id
-            JOIN experience_has_keyword ON experience.experience_id = experience_has_keyword.experience_id
-            LEFT JOIN keyword ON experience_has_keyword.keyword_id = keyword.keyword_id
-            GROUP BY experience.experience_id"""
+    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                WHERE experience.experience_id = %s"""
 
     cur.execute(query, (experience_id,))
     data = cur.fetchone()
