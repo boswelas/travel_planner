@@ -6,7 +6,7 @@ import AddToTripDropdown from '../pages/trip/addExperienceToTrip';
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
     const { user } = useAuth();
     console.log(user);
-    const { experience_id, title, city, state, country, rating, avg_rating, description } = props
+    const { experience_id, title, city, state, country, rating, avg_rating, description, keywords } = props
 
     const handleDeleteFromTrip = async (event) => {
         event.preventDefault();
@@ -23,7 +23,6 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             });
 
             const data = await response.json();
-            console.log(data);
             window.location.reload();
         } catch (error) {
             console.error(error);
@@ -69,7 +68,9 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             {fromTrip && (
                 <button onClick={(event) => { handleDeleteFromTrip(event) }}>Delete</button>
             )}
+            <p className={styles.CardKeywords}>Keywords: {keywords}</p>
         </div>
+        
     );
 }
 
