@@ -35,6 +35,14 @@ const ExperienceForm = () => {
         }
     };
 
+    const handleClear = () => {
+        setTitle('');
+        setDescription('');
+        setGeolocation([0, 0]);
+        setKeywords('');
+        setImage(null);
+      };      
+
     return (
         <div>
             <h2>Create New Experience</h2>
@@ -67,6 +75,9 @@ const ExperienceForm = () => {
                 <br />
                 <br />
                 <button type="submit">Submit</button>
+                <button type="button" onClick={handleClear}>Clear</button>
+                <button type="button" onClick={() => window.history.back()}>Cancel</button>
+                
             </form>
         </div>
     );
