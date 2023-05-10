@@ -1,11 +1,12 @@
 import styles from '../styles/ExpCard.module.css';
 import Link from 'next/link';
-
+import { useAuth } from '@/components/AuthContext';
+import AddToTripDropdown from '../pages/trip/addExperienceToTrip';
 
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
-
+    const { user } = useAuth();
+    console.log(user);
     const { experience_id, title, city, state, country, rating, avg_rating, description } = props
-    console.log(fromTrip);
 
     const handleDeleteFromTrip = async (event) => {
         event.preventDefault();
@@ -34,6 +35,7 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             <h3 className={styles.CardTitle}>
                 <a href={`/experience/${experience_id}`}>{title}</a>
             </h3>
+            {user && !fromTrip ? (AddToTripDropdown({ experience_id })) : <></>}
             <p className={styles.CardDescription}>
                 {description}
             </p>
