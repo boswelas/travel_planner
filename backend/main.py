@@ -127,7 +127,7 @@ def experience():
         cur.execute(query)
         data = cur.fetchall()
         data = [convert_to_dict(cur, row) for row in data]
-        
+
         cur.close()
         cnx.close()
         return jsonify(data=data)
@@ -138,12 +138,17 @@ def get_experience(experience_id):
     cnx = create_connection()
     cur = cnx.cursor()
 
-    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, GROUP_CONCAT(keyword.keyword) as keywords
-            FROM experience
-            JOIN location ON experience.location_id = location.location_id
-            JOIN experience_has_keyword ON experience.experience_id = experience_has_keyword.experience_id
-            LEFT JOIN keyword ON experience_has_keyword.keyword_id = keyword.keyword_id
-            GROUP BY experience.experience_id"""
+    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, 
+                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                LEFT JOIN experience_has_keyword
+                ON experience.experience_id = experience_has_keyword.experience_id
+                LEFT JOIN keyword
+                ON experience_has_keyword.keyword_id = keyword.keyword_id
+                WHERE experience.experience_id = %s
+                GROUP BY experience.experience_id"""
 
     cur.execute(query, (experience_id,))
     data = cur.fetchone()
@@ -165,34 +170,24 @@ def addNewExperience():
         geolocation = data["geolocation"]
         keywords = data["keywords"]
         # image = data["image"]
-        user_user_id = 9999
+        # user_user_id = 9999
 
         cnx = create_connection()
         cur = cnx.cursor()
 
         # Location logic
-        location_id = get_or_add_location(geolocation)
-        print(location_id)
-        
+        location_id = get_or_add_location(geolocation)        
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id, user_user_id) VALUES (%s, %s, %s, %s)', (title, description, location_id, user_user_id))
+        cur.execute('INSERT INTO experience (title, description, location_id) VALUES (%s, %s, %s)', (title, description, location_id))
 
         experience_id = cur.lastrowid
 
-        # Get the current maximum keyword_id
-        cur.execute('SELECT MAX(keyword_id) FROM keyword')
-        result = cur.fetchone()
-        if result[0] is not None:
-            keyword_id = result[0] + 1
-        else:
-            keyword_id = 0
-
         # INSERT INTO keywords
         for keyword in keywords:
-            cur.execute('INSERT INTO keyword (keyword_id, keyword) VALUES (%s, %s)', (keyword_id, keyword,))
+            cur.execute('INSERT INTO keyword (keyword) VALUES (%s)', ( keyword,))
+            keyword_id = cur.lastrowid
             cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)', (experience_id, keyword_id))
-            keyword_id += 1
 
         cnx.commit()
         return jsonify({"experience_id": experience_id})
