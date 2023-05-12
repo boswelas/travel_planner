@@ -113,7 +113,7 @@ def experience():
         cnx = create_connection()
         cur = cnx.cursor()
 
-        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, 
+        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
                 GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
                 FROM experience
                 JOIN location
@@ -128,6 +128,13 @@ def experience():
         data = cur.fetchall()
         data = [convert_to_dict(cur, row) for row in data]
 
+        for item in data:
+            if item['geolocation'] is not None:
+                geolocation_str = item['geolocation'][6:-1]  # Remove "POINT(" at start and ")" at end
+                geolocation_coords = geolocation_str.split()  # Split by space
+                geolocation_coords = tuple(map(float, geolocation_coords))  # Convert to float and form a tuple
+                item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"  # Format as a tuple string
+
         cur.close()
         cnx.close()
         return jsonify(data=data)
@@ -138,7 +145,7 @@ def get_experience(experience_id):
     cnx = create_connection()
     cur = cnx.cursor()
 
-    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, 
+    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
                 GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
                 FROM experience
                 JOIN location
@@ -171,6 +178,7 @@ def addNewExperience():
         keywords = data["keywords"]
         # image = data["image"]
         # user_user_id = 9999
+        print(geolocation, 'GEOLOCATION')
 
         cnx = create_connection()
         cur = cnx.cursor()
@@ -179,7 +187,7 @@ def addNewExperience():
         location_id = get_or_add_location(geolocation)        
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id) VALUES (%s, %s, %s)', (title, description, location_id))
+        cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))', (title, description, location_id, geolocation[0], geolocation[1]))
 
         experience_id = cur.lastrowid
 
@@ -205,12 +213,21 @@ def get_or_add_location(geolocation):
     lat = geolocation[0]
     long = geolocation[1]
     
+    # # Pulls info from API
+    # OCG = OpenCageGeocode(GEOCAGE_API)
+    # results = OCG.reverse_geocode(lat, long)
+    # city = results[0]['components']['village']
+    # state = results[0]['components']['state']
+    # country = results[0]['components']['country']
+
     # Pulls info from API
     OCG = OpenCageGeocode(GEOCAGE_API)
     results = OCG.reverse_geocode(lat, long)
-    city = results[0]['components']['village']
-    state = results[0]['components']['state']
-    country = results[0]['components']['country']
+
+    components = results[0]['components']
+    city = components.get('city') or components.get('town') or components.get('village') or components.get('state_district') or components.get('county') or components.get('region') or components.get('island') or 'Unknown'
+    state = components.get('state') or 'Unknown'
+    country = components.get('country') or 'Unknown'
 
     # Checks if location exists
     select_sql = "SELECT location_id FROM location WHERE city = %s AND state = %s AND country = %s"
