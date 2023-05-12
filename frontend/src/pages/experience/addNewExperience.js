@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 // Code Citation for firebase image storing:
 // URL Accessed: https://firebase.google.com/docs/storage/web/start
+
+import React, { useState } from 'react';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from '@/components/AuthContext';
 
 // Create a root reference
 const storage  = getStorage();
 
 const ExperienceForm = () => {
+    const { user, getToken } = useAuth();
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [geolocation, setGeolocation] = useState([0, 0]);
@@ -29,13 +32,14 @@ const ExperienceForm = () => {
             formData.append('keywords', JSON.stringify(keywords.split(',').map(keyword => keyword.trim())));
             formData.append('imageURL', downloadURL);
 
+            const token = await getToken();
 
             // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
             const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
-                // headers: {
-                //     'Content-Type': 'application/json',
-                // },
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
                 body: formData
             });
 
