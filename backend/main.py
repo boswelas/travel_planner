@@ -567,10 +567,16 @@ def LatestExp():
             search_term = 3
 
         query = """
-                SELECT DISTINCT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
+                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, 
+                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
                 FROM experience
                 JOIN location
                 ON experience.location_id = location.location_id
+                LEFT JOIN experience_has_keyword
+                ON experience.experience_id = experience_has_keyword.experience_id
+                LEFT JOIN keyword
+                ON experience_has_keyword.keyword_id = keyword.keyword_id
+                GROUP BY experience.experience_id
                 ORDER BY experience.experience_id DESC
                 LIMIT %s"""
 
@@ -585,7 +591,7 @@ def LatestExp():
         payload = []
         for row in data:
             payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6]})
+                           'country': row[4], 'rating': row[5], 'description': row[6], 'keywords': row[7]})
 
         return jsonify(payload)
 
