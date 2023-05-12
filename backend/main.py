@@ -178,7 +178,12 @@ def get_experience(experience_id):
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
     if request.method == "POST":
-        # data = request.get_json()
+        header = request.headers.get('Authorization')
+        user_id = verify_token(header)
+
+        if not user_id:
+            return jsonify({"error": "Invalid or expired token"}), 403
+
         title = request.form["title"]
         description = request.form["description"]
         geolocation = json.loads(request.form["geolocation"])
