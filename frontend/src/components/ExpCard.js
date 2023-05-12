@@ -6,7 +6,7 @@ import AddToTripDropdown from '../pages/trip/addExperienceToTrip';
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
     const { user } = useAuth();
     console.log(user);
-    const { experience_id, title, city, state, country, rating, avg_rating, description, keywords } = props
+    const { experience_id, title, city, state, country, rating, avg_rating, description, keywords, geolocation } = props
 
     const handleDeleteFromTrip = async (event) => {
         event.preventDefault();
@@ -59,9 +59,13 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
 
                 {rating || avg_rating} / 5
             </p>
+
             <p className={styles.CardLocation}>
                 {city}, {state}, {country}
             </p>
+
+            <p className={styles.CardLocation}>{geolocation}</p>
+
             <div className={styles.Photo}>
                 Photo
             </div>
