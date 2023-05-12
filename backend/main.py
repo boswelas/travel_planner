@@ -567,7 +567,7 @@ def LatestExp():
             search_term = 3
 
         query = """
-                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description, 
+                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
                 GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
                 FROM experience
                 JOIN location
@@ -590,8 +590,9 @@ def LatestExp():
         # Convert the data to a dictionary so that it shows up as an object
         payload = []
         for row in data:
+            geolocation = f"({row[8]}, {row[9]})"  # Format as (lat, long)
             payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6], 'keywords': row[7]})
+                           'country': row[4], 'rating': row[5], 'description': row[6], 'keywords': row[7], 'geolocation': row[8]})
 
         return jsonify(payload)
 
