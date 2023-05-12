@@ -1,11 +1,4 @@
 import React, { useState } from 'react';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
-// Code Citation for firebase image storing:
-// URL Accessed: https://firebase.google.com/docs/storage/web/start
-
-// Create a root reference
-const storage  = getStorage();
 
 const ExperienceForm = () => {
     const [title, setTitle] = useState('');
@@ -16,18 +9,15 @@ const ExperienceForm = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
-        const storageRef = ref(storage, `images/${image.name}`);
-        const uploadSnapshot = await uploadBytes(storageRef, image);
-        const downloadURL = await getDownloadURL(uploadSnapshot.ref);
-
         try {
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
             formData.append('geolocation', JSON.stringify(geolocation.map(parseFloat)));
             formData.append('keywords', JSON.stringify(keywords.split(',').map(keyword => keyword.trim())));
-            formData.append('imageURL', downloadURL);
+            if (image) {
+                formData.append('image', image, image.name);
+            }
 
 
             const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
@@ -57,8 +47,6 @@ const ExperienceForm = () => {
         setImage(null);
       };      
 
-
-    
     return (
         <div>
             <h2>Create New Experience</h2>
@@ -75,8 +63,8 @@ const ExperienceForm = () => {
                 <br />
                 <label>
                     Geolocation (latitude, longitude):
-                    <input type="number" value={geolocation[0]} required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
-                    <input type="number" value={geolocation[1]} required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
+                    <input type="number" value={geolocation[0]} min="-90" max="90" required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
+                    <input type="number" value={geolocation[1]} min="-180" max="180" required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
                 </label>
                 <br />
                 <label>
