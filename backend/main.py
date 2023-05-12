@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+import json
 import os
 import jwt
 import requests
@@ -159,8 +160,14 @@ def get_experience(experience_id):
 
     cur.execute(query, (experience_id,))
     data = cur.fetchone()
-
     data = convert_to_dict(cur, data)
+
+    if data['geolocation'] is not None:
+        geolocation_str = data['geolocation'][6:-1]  # Remove "POINT(" at start and ")" at end
+        geolocation_coords = geolocation_str.split()  # Split by space
+        geolocation_coords = tuple(map(float, geolocation_coords))  # Convert to float and form a tuple
+        data['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"  # Format as a tuple string
+
     cur.close()
     cnx.close()
 
@@ -171,14 +178,12 @@ def get_experience(experience_id):
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
     if request.method == "POST":
-        data = request.get_json()
-        title = data["title"]
-        description = data["description"]
-        geolocation = data["geolocation"]
-        keywords = data["keywords"]
-        # image = data["image"]
-        # user_user_id = 9999
-        print(geolocation, 'GEOLOCATION')
+        # data = request.get_json()
+        title = request.form["title"]
+        description = request.form["description"]
+        geolocation = json.loads(request.form["geolocation"])
+        keywords = json.loads(request.form["keywords"])
+        imageURL = request.form["imageURL"]
 
         cnx = create_connection()
         cur = cnx.cursor()
@@ -187,7 +192,7 @@ def addNewExperience():
         location_id = get_or_add_location(geolocation)        
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))', (title, description, location_id, geolocation[0], geolocation[1]))
+        cur.execute('INSERT INTO experience (title, description, location_id, geolocation, imageURL) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"), %s)', (title, description, location_id, geolocation[0], geolocation[1], imageURL))
 
         experience_id = cur.lastrowid
 
