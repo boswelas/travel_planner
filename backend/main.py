@@ -599,7 +599,6 @@ def LatestExp():
 def getUserRating():
     if request.method == "POST":
         try:
-            print('in getUserRating')
             data = request.get_json()
             header = request.headers.get('Authorization')
             user_id = verify_token(header)
@@ -613,6 +612,46 @@ def getUserRating():
             cur.close()
             cnx.close()
             return jsonify({"rating": rating[0]})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)})
+
+    return jsonify({"success": False, "error": "Invalid request method"})
+
+
+@app.route('/addUserRating', methods=['POST'])
+def addUserRating():
+    if request.method == "POST":
+        try:
+            data = request.get_json()
+            header = request.headers.get('Authorization')
+            user_id = verify_token(header)
+            experience_id = data['experience_id']
+            rating = data['rating']
+
+            # Insert user's rating into 'rating' table
+            query = query = "INSERT INTO user_rating (user_id, experience_id, rating) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE rating = %s"
+            values = (user_id, experience_id, rating, rating)
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(query, values)
+            data = cur.fetchall()
+            cnx.commit()
+
+            # Get new rating average for the experience
+            avg_query = "SELECT AVG(rating) FROM user_rating WHERE experience_id = %s"
+            avg_values = (experience_id,)
+            cur.execute(avg_query, avg_values)
+            avg_rating = cur.fetchone()[0]
+
+            # Update the average rating in the experience table
+            update_query = "UPDATE experience SET avg_rating = %s WHERE experience_id = %s"
+            update_values = (avg_rating, experience_id)
+            cur.execute(update_query, update_values)
+            cnx.commit()
+
+            cur.close()
+            cnx.close()
+            return jsonify({"Success": True})
         except Exception as e:
             return jsonify({"success": False, "error": str(e)})
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/components/AuthContext';
 import AddToTripDropdown from '../pages/trip/addExperienceToTrip';
 import { handleGetRating } from '../components/getUserRating'
+import { addUserRating } from '../components/addUserRating';
 import handleDeleteFromTrip from './deleteFromTrip';
 import { useRouter } from 'next/router';
 
@@ -13,7 +14,7 @@ import { useRouter } from 'next/router';
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
     const router = useRouter();
     const { user, getToken } = useAuth();
-    const { experience_id, title, city, state, country, rating, avg_rating, description, keywords, geolocation } = props
+    const { experience_id, title, city, state, country, avg_rating, description, keywords, geolocation } = props
     const [userRating, setUserRating] = useState(0);
 
     useEffect(() => {
@@ -25,6 +26,11 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
 
         fetchData();
     }, []);
+
+    const handleRatingChange = (event, newValue) => {
+        addUserRating(getToken, experience_id, newValue);
+        setUserRating(newValue);
+    };
 
     return (
         <div className={styles.Card}>
@@ -39,7 +45,7 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             </h3>
 
             <p className={styles.CardRating}>
-                <Rating name="rating" value={userRating} /> {rating || avg_rating}
+                <Rating name="rating" value={userRating} onChange={handleRatingChange} /> {avg_rating}
             </p>
 
             <p className={styles.CardDescription}>
@@ -65,8 +71,6 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
                     </p>
                 )
             }
-
-
 
             <p className={styles.CardLocation}>
                 {city}, {state}, {country}
