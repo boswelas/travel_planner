@@ -17,8 +17,8 @@ const Header = () => {
 
                 {user ? (
                     <>
-                        <h4>Welcome {user.displayName}</h4>
                         <div>
+                            <h4>Welcome {user.displayName}</h4>
                             <Link href="/">
                                 <span onClick={logout}>Sign out</span>
                             </Link>
