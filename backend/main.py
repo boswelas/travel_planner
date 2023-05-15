@@ -99,6 +99,8 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
+
+
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -106,6 +108,8 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
+
+
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -130,16 +134,21 @@ def experience():
 
         for item in data:
             if item['geolocation'] is not None:
-                geolocation_str = item['geolocation'][6:-1]  # Remove "POINT(" at start and ")" at end
+                # Remove "POINT(" at start and ")" at end
+                geolocation_str = item['geolocation'][6:-1]
                 geolocation_coords = geolocation_str.split()  # Split by space
-                geolocation_coords = tuple(map(float, geolocation_coords))  # Convert to float and form a tuple
-                item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"  # Format as a tuple string
+                # Convert to float and form a tuple
+                geolocation_coords = tuple(map(float, geolocation_coords))
+                # Format as a tuple string
+                item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
 
         cur.close()
         cnx.close()
         return jsonify(data=data)
 
 # Get experience based on id
+
+
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -184,21 +193,25 @@ def addNewExperience():
         cur = cnx.cursor()
 
         # Location logic
-        location_id = get_or_add_location(geolocation)        
+        location_id = get_or_add_location(geolocation)
 
         # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))', (title, description, location_id, geolocation[0], geolocation[1]))
+        cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))',
+                    (title, description, location_id, geolocation[0], geolocation[1]))
 
         experience_id = cur.lastrowid
 
         # INSERT INTO keywords
         for keyword in keywords:
-            cur.execute('INSERT INTO keyword (keyword) VALUES (%s)', ( keyword,))
+            cur.execute(
+                'INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
             keyword_id = cur.lastrowid
-            cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)', (experience_id, keyword_id))
+            cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)',
+                        (experience_id, keyword_id))
 
         cnx.commit()
         return jsonify({"experience_id": experience_id})
+
 
 def get_or_add_location(geolocation):
     """
@@ -212,7 +225,7 @@ def get_or_add_location(geolocation):
     # Breaks out coordinates
     lat = geolocation[0]
     long = geolocation[1]
-    
+
     # # Pulls info from API
     # OCG = OpenCageGeocode(GEOCAGE_API)
     # results = OCG.reverse_geocode(lat, long)
@@ -225,7 +238,8 @@ def get_or_add_location(geolocation):
     results = OCG.reverse_geocode(lat, long)
 
     components = results[0]['components']
-    city = components.get('city') or components.get('town') or components.get('village') or components.get('state_district') or components.get('county') or components.get('region') or components.get('island') or 'Unknown'
+    city = components.get('city') or components.get('town') or components.get('village') or components.get(
+        'state_district') or components.get('county') or components.get('region') or components.get('island') or 'Unknown'
     state = components.get('state') or 'Unknown'
     country = components.get('country') or 'Unknown'
 
@@ -249,7 +263,6 @@ def get_or_add_location(geolocation):
     cnx.close()
 
     return location_id[0]
-
 
 
 ############################# END route for Experiences #############################
@@ -426,7 +439,7 @@ def addTrip():
         user_id = data["user_id"]
         if token_uid == user_id:
             query = "INSERT INTO trip (name, user_id) VALUES (%s, %s)"
-            # Opens connection & cursor
+
             cnx = create_connection()
             cur = cnx.cursor()
 
@@ -496,21 +509,19 @@ def addExperienceToTrip():
         try:
             data = request.get_json()
             header = request.headers.get('Authorization')
-            user_id = verify_token(header)
-            experience_id = data["experience_id"]
-            print("experience id: %s", experience_id)
-            trip_id = data["trip_id"]
-            print("trip id: %s", trip_id)
-            query = "INSERT INTO trip_has_experience (trip_id, experience_id) VALUES (%s, %s)"
-            values = (trip_id, experience_id)
-            cnx = create_connection()
-            cur = cnx.cursor()
-            cur.execute(query, values)
-            cnx.commit()
-            cur.close()
-            cnx.close()
+            if verify_token(header):
+                experience_id = data["experience_id"]
+                trip_id = data["trip_id"]
+                query = "INSERT INTO trip_has_experience (trip_id, experience_id) VALUES (%s, %s)"
+                values = (trip_id, experience_id)
+                cnx = create_connection()
+                cur = cnx.cursor()
+                cur.execute(query, values)
+                cnx.commit()
+                cur.close()
+                cnx.close()
 
-            return jsonify({"success": True})
+                return jsonify({"success": True})
         except Exception as e:
             return jsonify({"success": False, "error": str(e)})
 
@@ -579,7 +590,34 @@ def LatestExp():
 
         return jsonify(payload)
 
-############################# END route for Search #############################
+############################# END route for Latest Experience #############################
+
+############################# BEGIN route for Ratings #############################
+
+
+@app.route('/getUserRating', methods=['POST'])
+def getUserRating():
+    if request.method == "POST":
+        try:
+            print('in getUserRating')
+            data = request.get_json()
+            header = request.headers.get('Authorization')
+            user_id = verify_token(header)
+            experience_id = data['experience_id']
+            query = "SELECT rating FROM user_rating WHERE experience_id = %s AND user_id = %s"
+            values = (experience_id, user_id)
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(query, values)
+            rating = cur.fetchone()
+            cur.close()
+            cnx.close()
+            return jsonify({"rating": rating[0]})
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)})
+
+    return jsonify({"success": False, "error": "Invalid request method"})
+############################# END route for Ratings #############################
 
 
 if __name__ == '__main__':

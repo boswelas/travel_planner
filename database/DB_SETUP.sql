@@ -170,6 +170,27 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table `railway`.`user_rating`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `railway`.`user_rating` (
+  `experience_id` INT NOT NULL,
+  `user_id` VARCHAR(128) NOT NULL,
+  `rating` INT,
+  PRIMARY KEY (`experience_id`, `user_id`),
+  INDEX `fk_rating_experience1_idx` (`experience_id` ASC) VISIBLE,
+  INDEX `fk_rating_user1_idx` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `fk_rating_experience1`
+    FOREIGN KEY (`experience_id`)
+    REFERENCES `railway`.`experience` (`experience_id`),
+  CONSTRAINT `fk_rating_user1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `railway`.`user` (`user_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
