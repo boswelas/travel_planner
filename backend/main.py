@@ -642,6 +642,7 @@ def addUserRating():
             avg_values = (experience_id,)
             cur.execute(avg_query, avg_values)
             avg_rating = cur.fetchone()[0]
+            avg_rating = round(avg_rating, 1)
 
             # Update the average rating in the experience table
             update_query = "UPDATE experience SET avg_rating = %s WHERE experience_id = %s"
