@@ -68,9 +68,14 @@ const Trip = () => {
         setNewTripTitle('');
     };
 
+    function getRandomIndex() {
+        return Math.floor(Math.random() * 6);
+    }
+
     const handleAddTripSubmit = async (event) => {
         event.preventDefault();
         try {
+            const randomIndex = getRandomIndex(0, 5);
             const token = await getToken();
             const response = await fetch(
                 'https://travel-planner-production.up.railway.app/addTrip',
@@ -83,6 +88,7 @@ const Trip = () => {
                     body: JSON.stringify({
                         user_id: user.uid,
                         name: newTripTitle,
+                        background_photo: randomIndex
                     }),
                 }
             );
