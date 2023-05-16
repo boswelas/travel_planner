@@ -4,6 +4,7 @@ import ExpCard from '@/components/ExpCard';
 export async function getServerSideProps(context) {
     const { id } = context.params;
     const res = await fetch(`https://travel-planner-production.up.railway.app/experience/${id}`);
+    // const res = await fetch(`http://127.0.0.1:5001/experience/${id}`);
     const data = await res.json();
 
     return {
