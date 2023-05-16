@@ -63,8 +63,8 @@ const ExperienceForm = () => {
                 <br />
                 <label>
                     Geolocation (latitude, longitude):
-                    <input type="number" value={geolocation[0]} min="-90" max="90" required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
-                    <input type="number" value={geolocation[1]} min="-180" max="180" required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
+                    <input type="number" value={geolocation[0]} required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
+                    <input type="number" value={geolocation[1]} required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
                 </label>
                 <br />
                 <label>
