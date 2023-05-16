@@ -440,7 +440,7 @@ def addTrip():
         background_photo = data["background_photo"]
         if token_uid == user_id:
             query = "INSERT INTO trip (name, user_id, background_photo) VALUES (%s, %s, %s)"
-
+            select_query = "SELECT * FROM trip WHERE user_id = %s"
             cnx = create_connection()
             cur = cnx.cursor()
 
@@ -448,7 +448,11 @@ def addTrip():
                 query, (name, user_id, background_photo))
             cnx.commit()
 
-        return jsonify({"success": True})
+            cur.execute(select_query, (user_id, ))
+            data = cur.fetchall()
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
     return jsonify({"success": False})
 
 
