@@ -8,8 +8,8 @@ import Header from "@/components/Header";
 import React, { useState, useEffect } from 'react';
 
 export async function getServerSideProps() {
-  // const res = await fetch('https://travel-planner-production.up.railway.app/LatestExp');
-  const res = await fetch('http://127.0.0.1:5001/LatestExp');
+  const res = await fetch('https://travel-planner-production.up.railway.app/LatestExp');
+  // const res = await fetch('http://127.0.0.1:5001/LatestExp');
   const data = await res.json();
   console.log(data.data, 'DATA')
 
