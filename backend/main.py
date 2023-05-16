@@ -138,6 +138,7 @@ def experience():
                 # Format as a tuple string
                 item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
 
+        print(data, 'DATA HERE')
         cur.close()
         cnx.close()
         return jsonify(data=data)
@@ -164,6 +165,16 @@ def get_experience(experience_id):
     data = cur.fetchone()
 
     data = convert_to_dict(cur, data)
+
+    if data['geolocation'] is not None:
+        # Remove "POINT(" at start and ")" at end
+        geolocation_str = data['geolocation'][6:-1]
+        geolocation_coords = geolocation_str.split()  # Split by space
+        # Convert to float and form a tuple
+        geolocation_coords = tuple(map(float, geolocation_coords))
+        # Format as a tuple string
+        data['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+
     cur.close()
     cnx.close()
 
