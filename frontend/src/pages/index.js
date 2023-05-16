@@ -1,9 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
-import { useRouter } from "next/router";
 import ExpCardGrid from '@/components/ExpCardGrid'
-import ExpCard from '@/components/ExpCard'
 import Header from "@/components/Header";
 import React, { useState, useEffect } from 'react';
 
