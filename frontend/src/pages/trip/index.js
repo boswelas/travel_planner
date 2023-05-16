@@ -43,8 +43,6 @@ const Trip = () => {
                 );
 
                 const data = await response.json();
-                console.log(data);
-                console.log(data.trip);
                 if (data.trip === 'invalid') {
                     setTripData([]);
                 } else {
@@ -94,9 +92,10 @@ const Trip = () => {
             );
 
             const data = await response.json();
-            setTripData([data.trip]);
+            console.log(tripData);
+            console.log(data.trip);
+            setTripData(data.trip);
             handleCloseAddTrip();
-            window.location.reload();
         } catch (error) {
             console.error(error);
         }
