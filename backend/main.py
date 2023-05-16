@@ -437,14 +437,15 @@ def addTrip():
         data = request.get_json()
         name = data["name"]
         user_id = data["user_id"]
+        background_photo = data["background_photo"]
         if token_uid == user_id:
-            query = "INSERT INTO trip (name, user_id) VALUES (%s, %s)"
+            query = "INSERT INTO trip (name, user_id, background_photo) VALUES (%s, %s, %s)"
 
             cnx = create_connection()
             cur = cnx.cursor()
 
             cur.execute(
-                query, (name, user_id))
+                query, (name, user_id, background_photo))
             cnx.commit()
 
         return jsonify({"success": True})

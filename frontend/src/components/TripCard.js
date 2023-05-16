@@ -10,7 +10,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 
 const TripCard = ({ props }) => {
-    const [trip_id, user_id, name] = props;
+    const [trip_id, user_id, name, background_photo] = props;
     const [openConfirmation, setOpenConfirmation] = useState(false);
 
     const handleButtonClick = () => {
@@ -49,8 +49,10 @@ const TripCard = ({ props }) => {
     };
 
     return (
-        <div className={styles.Card}>
-            <h3 className={styles.CardTitle}>{name}</h3>
+        <div className={styles.Card} style={{ backgroundImage: `url('/images/trip_background/${background_photo}.png')` }}>
+            <div className={styles.CardTitle}>
+                <h3 >{name}</h3>
+            </div>
             <button className={styles.ViewMore} onClick={handleButtonClick}>
                 <span>View</span>
             </button>
