@@ -99,8 +99,6 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
-
-
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -108,8 +106,6 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
-
-
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -147,8 +143,6 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
-
-
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -225,13 +219,6 @@ def get_or_add_location(geolocation):
     # Breaks out coordinates
     lat = geolocation[0]
     long = geolocation[1]
-
-    # # Pulls info from API
-    # OCG = OpenCageGeocode(GEOCAGE_API)
-    # results = OCG.reverse_geocode(lat, long)
-    # city = results[0]['components']['village']
-    # state = results[0]['components']['state']
-    # country = results[0]['components']['country']
 
     # Pulls info from API
     OCG = OpenCageGeocode(GEOCAGE_API)
@@ -572,28 +559,41 @@ def LatestExp():
             # Defaults to 3
             search_term = 3
 
-        query = """
-                SELECT DISTINCT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                ORDER BY experience.experience_id DESC
-                LIMIT %s"""
-
         cnx = create_connection()
         cursor = cnx.cursor()
 
-        cursor.execute(query, (search_term,))
+        query = """
+                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
+                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                JOIN experience_has_keyword
+                ON experience.experience_id = experience_has_keyword.experience_id
+                LEFT JOIN keyword
+                ON experience_has_keyword.keyword_id = keyword.keyword_id
+                GROUP BY experience.experience_id
+                ORDER BY experience.experience_id DESC
+                LIMIT %s"""
 
+        cursor.execute(query, (search_term,))
         data = cursor.fetchall()
 
-        # Convert the data to a dictionary so that it shows up as an object
-        payload = []
-        for row in data:
-            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6]})
+        data = [convert_to_dict(cursor, row) for row in data]
 
-        return jsonify(payload)
+        for item in data:
+            if item['geolocation'] is not None:
+                # Remove "POINT(" at start and ")" at end
+                geolocation_str = item['geolocation'][6:-1]
+                geolocation_coords = geolocation_str.split()  # Split by space
+                # Convert to float and form a tuple
+                geolocation_coords = tuple(map(float, geolocation_coords))
+                # Format as a tuple string
+                item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+        cursor.close()
+        cnx.close()
+        print(data, 'DATA')
+        return jsonify(data=data)
 
 ############################# END route for Latest Experience #############################
 
