@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '@/components/AuthContext';
 
 const ExperienceForm = () => {
     const [title, setTitle] = useState('');
@@ -10,6 +11,7 @@ const ExperienceForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            const { getToken } = useAuth();
             const formData = new FormData();
             formData.append('title', title);
             formData.append('description', description);
@@ -19,13 +21,13 @@ const ExperienceForm = () => {
                 formData.append('image', image, image.name);
             }
 
-
+            const token = await getToken();
             const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-//             const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+            // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                 method: 'POST',
-                // headers: {
-                //     'Content-Type': 'application/json',
-                // },
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
                 body: formData
             });
 

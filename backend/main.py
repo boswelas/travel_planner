@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
@@ -10,6 +10,8 @@ from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 
 from opencage.geocoder import OpenCageGeocode
+
+from google.cloud import storage
 
 
 app = Flask(__name__)
@@ -185,14 +187,17 @@ def get_experience(experience_id):
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
     if request.method == "POST":
-        data = request.get_json()
-        title = data["title"]
-        description = data["description"]
-        geolocation = data["geolocation"]
-        keywords = data["keywords"]
-        # image = data["image"]
-        # user_user_id = 9999
-        print(geolocation, 'GEOLOCATION')
+        header = request.headers.get('Authorization')
+        token_uid = verify_token(header)
+
+        if not token_uid:
+            return jsonify({"error": "Invalid token"}), 403
+
+        title = request.form.get("title")
+        description = request.form.get("description")
+        geolocation = json.loads(request.form.get("geolocation"))
+        keywords = json.loads(request.form.get("keywords"))
+        image = request.files.get('image')
 
         cnx = create_connection()
         cur = cnx.cursor()
@@ -206,6 +211,13 @@ def addNewExperience():
 
         experience_id = cur.lastrowid
 
+        # Upload Image to Firebase and save URL in database
+        image_url = upload_image_to_firebase(image, experience_id)
+        cur.execute('INSERT INTO image (image_url) VALUES (%s)', (image_url,))
+
+        image_id = cur.lastrowid
+        cur.execute('INSERT INTO experience_has_image (experience_id, image_id) VALUES (%s, %s)', (experience_id, image_id))
+
         # INSERT INTO keywords
         for keyword in keywords:
             cur.execute(
@@ -217,6 +229,14 @@ def addNewExperience():
         cnx.commit()
         return jsonify({"experience_id": experience_id})
 
+def upload_image_to_firebase(image, experience_id):
+    if image:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket('gs://travelapp-9e26b.appspot.com')
+        blob = bucket.blob(f'experiences/{experience_id}/{image.filename}')
+        blob.upload_from_file(image, content_type=image.content_type)
+        return blob.public_url
+    return None
 
 def get_or_add_location(geolocation):
     """
