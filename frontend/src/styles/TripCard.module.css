@@ -1,23 +1,29 @@
-
 .Card {
-    background-color: rgb(255, 255, 255);
-    border-color: rgb(88, 88, 88);
-    border-style: solid;
-    border-width: 2px;
+    background-image: url("https://firebasestorage.googleapis.com/v0/b/travelapp-9e26b.appspot.com/o/suitcase_background.png?alt=media&token=22d74e01-7c1b-4291-affc-da9216e8569c");
+    background-color: #A9CCE3;
+    background-size: cover;
+    /* 
+    border-color: rgb(88, 88, 88); */
+    /* border-style: solid; */
+    /* border-width: 2px; */
     border-radius: 20px;
     max-width: 90%;
     float: center;
     text-align: center;
     padding: 5px;
+    height: 400px;
+    width: 250px;
+    position: relative;
 }
 
-    .Card h3 {
-        font-size: x-large;
-        min-width: 100%;
-        text-align: left;
-        margin: 10px;
-        color:black
-    }
+.Card h3 {
+    font-size: x-large;
+    min-width: 100%;
+    text-align: left;
+    margin: 10px;
+    color: white;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
 
 .CardGrid {
     float: center;
@@ -28,4 +34,27 @@
     grid-row-gap: 10px;
     padding-left: 10%;
     padding-right: 10%;
-   }
+}
+
+.ViewMore {
+    background-color: #A3E4D7;
+    border-color: #A3E4D7;
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    padding: 10px 20px;
+    font-size: 14px;
+    box-shadow: none;
+    border-radius: 10px;
+}
+
+.DeleteButton {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
+
+.LargeIconButton {
+    width: 48px;
+    height: 48px;
+  }
