@@ -23,6 +23,10 @@
 
 }
 
+.CardContent {
+    position: relative;
+}
+
 .CardGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -32,13 +36,15 @@
     width: 75%;
 }
 
-
-
-
 .CardTitle {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
+}
+
+.Title {
+    margin-right: auto;
+    margin-bottom: 0;
 }
 
 .ViewMore {
@@ -74,4 +80,15 @@
     display: flex;
     justify-content: center;
     flex-direction: row;
+}
+
+.EditIcon {
+    color: white;
+}
+
+.EditIconContainer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 5px;
 }

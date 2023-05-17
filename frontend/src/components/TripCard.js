@@ -1,19 +1,29 @@
+// Dialog adapted from Material-UI: https://mui.com/material-ui/react-dialog/
 import styles from '../styles/TripCard.module.css';
 import React, { useState } from 'react';
+import { useAuth } from '@/components/AuthContext.js';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 const TripCard = ({ props }) => {
     const [trip_id, user_id, name, background_photo] = props;
     const [openConfirmation, setOpenConfirmation] = useState(false);
     const [deleted, setDeleted] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [updatedName, setUpdatedName] = useState(name);
+    const { user, getToken } = useAuth();
 
-    const handleButtonClick = () => {
-        window.location.href = `/trip/${trip_id}?name=${name}&user_id=${user_id}`;
+    const handleViewButtonClick = () => {
+        const updatedTripName = updatedName !== name ? updatedName : name;
+        window.location.href = `/trip/${trip_id}?name=${encodeURIComponent(
+            updatedTripName
+        )}&user_id=${user_id}`;
     };
 
     const handleDeleteClick = () => {
@@ -37,7 +47,7 @@ const TripCard = ({ props }) => {
             );
 
             const data = await response.json();
-            setDeleted(true); 
+            setDeleted(true);
         } catch (error) {
             console.error(error);
         }
@@ -47,22 +57,82 @@ const TripCard = ({ props }) => {
         setOpenConfirmation(false);
     };
 
+    const handleEditClick = () => {
+        setIsEditing(true);
+    };
+
+    const handleSaveClick = async () => {
+        try {
+            const token = await getToken();
+            const response = await fetch('http://127.0.0.1:5001/updateTripName', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    trip_id: trip_id,
+                    name: updatedName,
+                }),
+            });
+
+            const data = await response.json();
+            setUpdatedName(updatedName);
+        } catch (error) {
+            console.error(error);
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancelClick = () => {
+        setIsEditing(false);
+        setUpdatedName(name);
+    };
+
+    const handleNameChange = (event) => {
+        setUpdatedName(event.target.value);
+    };
+
     if (deleted) {
-        return null; 
+        return null;
     }
 
     return (
         <div className={styles.Card} style={{ backgroundImage: `url('/images/trip_background/${background_photo}.png')` }}>
-            <div className={styles.CardTitle}>
-                <h3>{name}</h3>
+            <div className={styles.CardContent}>
+                <div className={styles.CardTitle}>
+                    {isEditing ? (
+                        <>
+                            <input
+                                className={styles.NameInput}
+                                type="text"
+                                value={updatedName}
+                                onChange={handleNameChange}
+                            />
+                            <div className={styles.ButtonGroup}>
+                                <Button onClick={handleSaveClick}>Save</Button>
+                                <Button onClick={handleCancelClick}>Cancel</Button>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <h3 className={styles.Title}>{updatedName}</h3>
+                            <div className={styles.EditIconContainer}>
+                                <EditIcon className={styles.EditIcon} onClick={handleEditClick} />
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-            <button className={styles.ViewMore} onClick={handleButtonClick}>
+
+            <button className={styles.ViewMore} onClick={handleViewButtonClick}>
                 <span>View</span>
             </button>
 
             <button className={styles.DeleteButton} onClick={handleDeleteClick}>
                 <span>Delete</span>
             </button>
+
             <Dialog
                 open={openConfirmation}
                 onClose={handleCancelDelete}

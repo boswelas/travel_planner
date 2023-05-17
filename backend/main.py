@@ -481,6 +481,30 @@ def addTrip():
     return jsonify({"success": False})
 
 
+@app.route('/updateTripName', methods=['POST'])
+def updateTripName():
+    if request.method == "POST":
+        header = request.headers.get('Authorization')
+        token_uid = verify_token(header)
+        if (token_uid):
+            data = request.get_json()
+            trip_id = data["trip_id"]
+            name = data["name"]
+            query = "UPDATE trip SET name = %s WHERE trip_id = %s AND user_id = %s"
+            select_query = "SELECT * FROM trip WHERE user_id = %s"
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(
+                query, (name, trip_id, token_uid))
+            cnx.commit()
+            cur.execute(select_query, (token_uid, ))
+            data = cur.fetchall()
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
+    return jsonify({"success": False})
+
+
 @app.route('/deleteTrip', methods=['POST'])
 def deleteTrip():
     if request.method == "POST":
