@@ -5,18 +5,8 @@ import { useAuth } from '@/components/AuthContext.js';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import styles from '@/styles/Trip.module.css';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    backgroundColor: '#fff', // Set the desired background color here
-    border: '2px solid #000',
-    boxShadow: '24px',
-    p: 4
-};
 
 const Trip = () => {
     const [tripData, setTripData] = useState([]);
@@ -117,7 +107,7 @@ const Trip = () => {
                         aria-labelledby="modal-title"
                         aria-describedby="modal-description"
                     >
-                        <div style={style}>
+                        <div className={styles.Modal}>
                             <Typography variant="h6" component="h2" id="modal-title">
                                 Add New Trip
                             </Typography>
