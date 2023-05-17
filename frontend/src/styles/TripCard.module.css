@@ -1,5 +1,5 @@
 .Card {
-    
+
     background-size: cover;
     border-radius: 20px;
     max-width: 90%;
@@ -15,12 +15,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: x-large;
+    font-size: larger;
     min-width: 100%;
     text-align: center;
     margin: 10px;
     color: white;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
 }
 
 .CardGrid {
@@ -32,6 +32,12 @@
     grid-row-gap: 10px;
     padding-left: 10%;
     padding-right: 10%;
+}
+
+.CardTitle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .ViewMore {
@@ -48,8 +54,14 @@
 
 .DeleteButton {
     position: absolute;
+    background-color: #F1948A;
+    border-color: #F1948A;
     bottom: 30px;
     right: 30px;
+    padding: 10px 20px;
+    font-size: 14px;
+    box-shadow: none;
+    border-radius: 10px;
 }
 
 .LargeIconButton {
