@@ -98,7 +98,7 @@ const Trip = () => {
             ) : (
                 <>
                     <button className={styles.Button} onClick={handleAddTrip}>Create New Trip</button>
-                    <h1>{user.displayName}'s Trips</h1>
+                    <h1>My Trips</h1>
 
                     <Modal
                         open={showAddTripPopup}
