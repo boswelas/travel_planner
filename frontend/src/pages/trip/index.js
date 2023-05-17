@@ -99,7 +99,7 @@ const Trip = () => {
                 <>
                     <h1>My Trips</h1>
 
-                    <button onClick={handleAddTrip}>New Trip</button>
+                    <button className={styles.Button} onClick={handleAddTrip}>New Trip</button>
 
                     <Modal
                         open={showAddTripPopup}
