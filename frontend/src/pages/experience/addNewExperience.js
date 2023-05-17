@@ -32,7 +32,7 @@ const ExperienceForm = () => {
             const submitData = async () => {
                 const token = await getToken();
                 const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-                // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+                    // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -64,7 +64,10 @@ const ExperienceForm = () => {
     };
 
     return (
-        <div>
+
+        <div>{!user ? (
+            <h1>Please Log In</h1>
+        ) : (<>
             <h2>Create New Experience</h2>
             <form onSubmit={handleSubmit}>
                 <label>
@@ -97,7 +100,7 @@ const ExperienceForm = () => {
                 <button type="submit">Submit</button>
                 <button type="button" onClick={handleClear}>Clear</button>
                 <button type="button" onClick={() => window.history.back()}>Cancel</button>
-            </form>
+            </form></>)}
         </div>
     );
 };
