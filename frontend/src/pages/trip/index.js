@@ -97,7 +97,7 @@ const Trip = () => {
                 <h1>Please Log In</h1>
             ) : (
                 <>
-                    <button className={styles.Button} onClick={handleAddTrip}>New Trip</button>
+                    <button className={styles.Button} onClick={handleAddTrip}>Create New Trip</button>
                     <h1>My Trips</h1>
 
                     <Modal
@@ -107,7 +107,7 @@ const Trip = () => {
                         aria-describedby="modal-description"
                     >
                         <div className={styles.Modal}>
-                            <Typography variant="h6" component="h2" id="modal-title">
+                            <Typography variant="h6" component="h2" id="modal-title" style={{ marginTop: 30 }}>
                                 Add New Trip
                             </Typography>
                             <form onSubmit={handleAddTripSubmit} style={{ border: 'none' }}>
