@@ -71,14 +71,14 @@ const TripCard = ({ props }) => {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Once you delete, your trip will be gone forever.
+                            Your trip will be gone forever.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCancelDelete}>Cancel</Button>
                         <Button onClick={handleConfirmDelete} autoFocus>
                             OK
                         </Button>
+                        <Button onClick={handleCancelDelete}>Cancel</Button>
                     </DialogActions>
                 </Dialog>
             </div>
