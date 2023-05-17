@@ -31,8 +31,8 @@ const ExperienceForm = () => {
 
             const submitData = async () => {
                 const token = await getToken();
-                // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-                const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+                const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+                // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
