@@ -1,0 +1,22 @@
+.Title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Align the title horizontally in the center */
+    font-size: medium;
+}
+
+.Title h1 {
+    margin-right: 10px;
+}
+
+.Button {
+    background-color: #8DD3BB;
+    border-color: #8DD3BB;
+    position: absolute;
+    right: 100px;
+    padding: 10px 20px;
+    font-size: 14px;
+    box-shadow: none;
+    border-radius: 10px;
+}
