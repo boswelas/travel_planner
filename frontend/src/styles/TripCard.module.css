@@ -1,15 +1,15 @@
 .Card {
-
     background-size: cover;
     border-radius: 20px;
     max-width: 90%;
-    float: center;
+    margin-bottom: 20px;
     text-align: center;
     padding: 5px;
     height: 400px;
     width: 250px;
     position: relative;
 }
+
 
 .Card h3 {
     display: flex;
@@ -24,15 +24,16 @@
 }
 
 .CardGrid {
-    float: center;
-    align-items: center;
-    justify-content: center;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-row-gap: 10px;
-    padding-left: 10%;
-    padding-right: 10%;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    width: 75%;
 }
+
+
+
 
 .CardTitle {
     display: flex;
@@ -67,4 +68,10 @@
 .LargeIconButton {
     width: 48px;
     height: 48px;
+}
+
+.Container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
 }

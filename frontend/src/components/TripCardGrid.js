@@ -3,7 +3,7 @@ import TripCard from './TripCard';
 
 const TripCardGrid = ({ data }) => {
   const cardList = data.map((cardData, index) => (
-    <div key={index}>
+    <div key={index} className={styles.Container}>
       <TripCard props={cardData} />
     </div>
   ));
