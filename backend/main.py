@@ -172,6 +172,7 @@ def get_experience(experience_id):
             ON experience.experience_id = experience_has_image.experience_id
             LEFT JOIN image
             ON experience_has_image.image_id = image.image_id
+            WHERE experience.experience_id = %s
             GROUP BY experience.experience_id"""
 
     cur.execute(query, (experience_id,))
@@ -607,17 +608,21 @@ def LatestExp():
         cnx = create_connection()
         cursor = cnx.cursor()
 
-        query = """
-                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
-                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                JOIN experience_has_keyword
-                ON experience.experience_id = experience_has_keyword.experience_id
-                LEFT JOIN keyword
-                ON experience_has_keyword.keyword_id = keyword.keyword_id
-                GROUP BY experience.experience_id
+        query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
+            GROUP_CONCAT(image.img_url) as img_url,
+            GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+            FROM experience
+            JOIN location
+            ON experience.location_id = location.location_id
+            JOIN experience_has_keyword
+            ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword
+            ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image
+            ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image
+            ON experience_has_image.image_id = image.image_id
+            GROUP BY experience.experience_id
                 ORDER BY experience.experience_id DESC
                 LIMIT %s"""
 
