@@ -306,21 +306,28 @@ def search():
         print(search_term)
 
         if search_term:
-            query = """SELECT DISTINCT exp.experience_id, exp.title, exp.city, exp.state, exp.country, exp.avg_rating, exp.description
-                        FROM (
-                            SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, keyword.keyword
-                                FROM experience
-                                JOIN location
-                                ON experience.location_id = location.location_id
-                                JOIN experience_has_keyword
-                                ON experience.experience_id = experience_has_keyword.experience_id
-                                JOIN keyword
-                                ON  experience_has_keyword.keyword_id = keyword.keyword_id
-                            WHERE
-                                MATCH (experience.title) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                                OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                                OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                        ) AS exp"""
+            query = """
+                    SELECT DISTINCT exp.experience_id, exp.title, exp.city, exp.state, exp.country, exp.avg_rating, exp.description, exp.geolocation, exp.img_url, exp.keywords
+                    FROM (
+                        SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation,
+                               GROUP_CONCAT(DISTINCT keyword.keyword SEPARATOR ', ') as keywords, GROUP_CONCAT(DISTINCT image.img_url) as img_url
+                        FROM experience
+                        JOIN location
+                        ON experience.location_id = location.location_id
+                        JOIN experience_has_keyword
+                        ON experience.experience_id = experience_has_keyword.experience_id
+                        LEFT JOIN keyword
+                        ON experience_has_keyword.keyword_id = keyword.keyword_id
+                        LEFT JOIN experience_has_image
+                        ON experience.experience_id = experience_has_image.experience_id
+                        LEFT JOIN image
+                        ON experience_has_image.image_id = image.image_id
+                        WHERE
+                            MATCH (experience.title) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                            OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                            OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                        GROUP BY experience.experience_id
+                    ) AS exp"""
 
             cnx = create_connection()
             cursor = cnx.cursor()
@@ -332,8 +339,19 @@ def search():
         # Convert the data to a dictionary so that it shows up as an object
         payload = []
         for row in data:
-            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6]})
+            # Parse geolocation as required
+            if row[7] is not None:
+                # Remove "POINT(" at start and ")" at end
+                geolocation_str = row[7][6:-1]
+                geolocation_coords = geolocation_str.split()  # Split by space
+                # Convert to float and form a tuple
+                geolocation_coords = tuple(map(float, geolocation_coords))
+                # Format as a tuple string
+                geolocation = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+            else:
+                geolocation = None
+
+            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4], 'rating': row[5], 'description': row[6], 'geolocation': geolocation, 'img_url': row[8], 'keywords': row[9]})
 
         return jsonify(payload)
 
