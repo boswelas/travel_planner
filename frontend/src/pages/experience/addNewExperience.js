@@ -88,9 +88,8 @@ const ExperienceForm = () => {
             const submitData = async (formData, token) => {
                 console.log(formData.get('img_url'), 'IMG URL');
                 console.log(token, 'TOKEN submitdata')
-                // const token = await getToken();
-                // const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
-                    const response = await fetch('http://localhost:5001/experience/addNewExperience', {
+                const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
+                    // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -100,8 +99,6 @@ const ExperienceForm = () => {
 
 
                 const data = await response.json();
-                console.log(token, 'THIS IS THE TOKEN FOR ADD NEW EXP')
-                console.log(data, '!!!!!!!!!!!')
                 console.log('New experience added with ID:', data.experience_id);
                 if (data.experience_id != undefined){
                     window.location.href = `/experience/${data.experience_id}`;
