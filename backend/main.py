@@ -45,16 +45,16 @@ def verify_token(id_token):
         public_key = cert.public_key()
         payload = jwt.decode(id_token, public_key, algorithms=[
                              alg], audience='travelapp-9e26b', issuer="https://securetoken.google.com/travelapp-9e26b", options={"verify_exp": True, "verify_iat": True})
-        # Check if the token has expired
-        if payload["exp"] < datetime.utcnow().timestamp():
-            # Token has expired
-            print("Token has expired - by timestamp")
-            print("Token expiration: ", payload["exp"])
-            print("Current time: ", datetime.utcnow().timestamp())
-            return False
-        else:
-            # Token is valid
-            return payload['user_id']
+        # # Check if the token has expired
+        # if payload["exp"] < datetime.utcnow().timestamp():
+        #     # Token has expired
+        #     print("Token has expired - by timestamp")
+        #     print("Token expiration: ", payload["exp"])
+        #     print("Current time: ", datetime.utcnow().timestamp())
+        #     return False
+        # else:
+        #     # Token is valid
+        return payload['user_id']
 
     except jwt.ExpiredSignatureError:
         # Token has expired
@@ -104,8 +104,6 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
-
-
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -113,8 +111,6 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
-
-
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -123,15 +119,20 @@ def experience():
         cur = cnx.cursor()
 
         query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
-                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                JOIN experience_has_keyword
-                ON experience.experience_id = experience_has_keyword.experience_id
-                LEFT JOIN keyword
-                ON experience_has_keyword.keyword_id = keyword.keyword_id
-                GROUP BY experience.experience_id"""
+            GROUP_CONCAT(image.img_url) as img_url,
+            GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+            FROM experience
+            JOIN location
+            ON experience.location_id = location.location_id
+            JOIN experience_has_keyword
+            ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword
+            ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image
+            ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image
+            ON experience_has_image.image_id = image.image_id
+            GROUP BY experience.experience_id"""
 
         cur.execute(query)
         data = cur.fetchall()
@@ -152,24 +153,26 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
-
-
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
     cur = cnx.cursor()
 
     query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
-                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                LEFT JOIN experience_has_keyword
-                ON experience.experience_id = experience_has_keyword.experience_id
-                LEFT JOIN keyword
-                ON experience_has_keyword.keyword_id = keyword.keyword_id
-                WHERE experience.experience_id = %s
-                GROUP BY experience.experience_id"""
+            GROUP_CONCAT(image.img_url) as img_url,
+            GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+            FROM experience
+            JOIN location
+            ON experience.location_id = location.location_id
+            JOIN experience_has_keyword
+            ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword
+            ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image
+            ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image
+            ON experience_has_image.image_id = image.image_id
+            GROUP BY experience.experience_id"""
 
     cur.execute(query, (experience_id,))
     data = cur.fetchone()
@@ -205,64 +208,45 @@ def addNewExperience():
             if not token_uid:
                 return jsonify({"error": "Invalid token"}), 403
 
-            data = request.get_json()
+            title = request.form.get("title")
+            description = request.form.get("description")
+            geolocation = list(map(float, request.form.get("geolocation").split(',')))
+            keywords = [keyword.strip() for keyword in request.form.get("keywords").split(',')]
+            img_url = request.form.get("img_url")
 
-            if token_uid:
-                title = request.form.get("title")
+            cnx = create_connection()
+            cur = cnx.cursor()
 
-                description = request.form.get("description")
-                geolocation = list(
-                    map(float, request.form.get("geolocation").split(',')))
-                keywords = [keyword.strip()
-                            for keyword in request.form.get("keywords").split(',')]
+            # Location logic
+            location_id = get_or_add_location(geolocation)
 
-                image = request.files.get('image')
-                cnx = create_connection()
-                cur = cnx.cursor()
+            # INSERT INTO experience
+            cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))',
+                        (title, description, location_id, geolocation[0], geolocation[1]))
+            experience_id = cur.lastrowid
 
-                # Location logic
-                location_id = get_or_add_location(geolocation)
+            cur.execute(
+                'INSERT INTO image (img_url) VALUES (%s)', (img_url,))
 
-                # INSERT INTO experience
-                cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))',
-                            (title, description, location_id, geolocation[0], geolocation[1]))
-                experience_id = cur.lastrowid
+            image_id = cur.lastrowid
+            print("image_id is %s", image_id)
+            cur.execute(
+                'INSERT INTO experience_has_image (experience_id, image_id) VALUES (%s, %s)', (experience_id, image_id))
 
-                # # Upload Image to Firebase and save URL in database
-                # image_url = upload_image_to_firebase(image, experience_id)
-                # print("image: ", image_url)
-                # cur.execute(
-                #     'INSERT INTO image (image_url) VALUES (%s)', (image_url,))
+            # INSERT INTO keywords
+            for keyword in keywords:
+                cur.execute(
+                    'INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
+                keyword_id = cur.lastrowid
+                print("keyword_id is %s", keyword_id)
+                cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)',
+                            (experience_id, keyword_id))
 
-                # image_id = cur.lastrowid
-                # print("image_id is %s", image_id)
-                # cur.execute(
-                #     'INSERT INTO experience_has_image (experience_id, image_id) VALUES (%s, %s)', (experience_id, image_id))
-
-                # INSERT INTO keywords
-                for keyword in keywords:
-                    cur.execute(
-                        'INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
-                    keyword_id = cur.lastrowid
-                    print("keyword_id is %s", keyword_id)
-                    cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)',
-                                (experience_id, keyword_id))
-
-                cnx.commit()
-                return jsonify({"experience_id": experience_id})
+            cnx.commit()
+            return jsonify({"experience_id": experience_id})
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-
-
-def upload_image_to_firebase(image, experience_id):
-    if image:
-        storage_client = storage.Client()
-        bucket = storage_client.bucket('gs://travelapp-9e26b.appspot.com')
-        blob = bucket.blob(f'experiences/{experience_id}/{image.filename}')
-        blob.upload_from_file(image, content_type=image.content_type)
-        return blob.public_url
-    return None
-
+        
 
 def get_or_add_location(geolocation):
     """
