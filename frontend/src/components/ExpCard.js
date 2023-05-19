@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
     const router = useRouter();
     const { user, getToken } = useAuth();
-    const { experience_id, title, city, state, country, avg_rating, description, keywords, geolocation } = props
+    const { experience_id, title, city, state, country, avg_rating, description, keywords, geolocation, img_url } = props
     const [userRating, setUserRating] = useState(0);
 
     useEffect(() => {
@@ -79,7 +79,7 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             <p className={styles.CardLocation}>{geolocation}</p>
 
             <div className={styles.Photo}>
-                Photo
+                <img className={styles.Image} src={img_url} alt={title} />
             </div>
             {
                 fromTrip && (

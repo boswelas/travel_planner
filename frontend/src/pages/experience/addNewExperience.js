@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/components/AuthContext';
-
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const ExperienceForm = () => {
     const { getToken, user } = useAuth();
@@ -9,6 +9,7 @@ const ExperienceForm = () => {
     const [geolocation, setGeolocation] = useState([0, 0]);
     const [keywords, setKeywords] = useState('');
     const [image, setImage] = useState(null);
+    const storage = getStorage();
 
 
     const handleSubmit = (event) => {
@@ -18,19 +19,75 @@ const ExperienceForm = () => {
                 console.error('No current user');
                 return;
             }
-
-            const formData = new FormData();
-            formData.append('title', title);
-            formData.append('description', description);
-            formData.append('geolocation', geolocation.map(parseFloat).join(','));
-            formData.append('keywords', keywords);
+            // Uploading an image to firebase
+            // Code Citation: https://firebase.google.com/docs/storage/web/upload-files
             if (image) {
-                formData.append('image', image, image.name);
+                // Create the file metadata
+                /** @type {any} */
+                const metadata = {
+                  contentType: 'image/jpeg'
+                };
+
+                // Upload file and metadata to the object 'images/mountains.jpg'
+                const storageRef = ref(storage, 'images/' + image.name);
+                const uploadTask = uploadBytesResumable(storageRef, image, metadata);
+
+                // Listen for state changes, errors, and completion of the upload.
+                uploadTask.on('state_changed',
+                  (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                      case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                      case 'running':
+                        console.log('Upload is running');
+                        break;
+                    }
+                  }, 
+                  (error) => {
+                    switch (error.code) {
+                      case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        break;
+                      case 'storage/canceled':
+                        // User canceled the upload
+                        break;
+                      case 'storage/unknown':
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                    }
+                  }, 
+                  async () => {
+
+                    if (user) {
+                        // User is signed in.
+                        const token = await getToken();  // Fetches a new token.
+
+                        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                            console.log('File available at', downloadURL);
+
+                            const formData = new FormData();
+                            formData.append('title', title);
+                            formData.append('img_url', downloadURL);
+                            formData.append('description', description);
+                            formData.append('geolocation', geolocation.map(parseFloat).join(','));
+                            formData.append('keywords', keywords);
+                            
+                            submitData(formData, token)  // Pass the new token to the submitData function
+                        });
+                    } else {
+                        // No user is signed in.
+                        console.log("No user is signed in");
+                    }
+                  }
+                );
             }
 
-
-            const submitData = async () => {
-                const token = await getToken();
+            const submitData = async (formData, token) => {
+                console.log(formData.get('img_url'), 'IMG URL');
+                console.log(token, 'TOKEN submitdata')
                 const response = await fetch('https://travel-planner-production.up.railway.app/experience/addNewExperience', {
                     // const response = await fetch('http://localhost:5001/experience/addNewExperience', {
                     method: 'POST',
@@ -42,13 +99,13 @@ const ExperienceForm = () => {
 
 
                 const data = await response.json();
-                console.log(token, 'THIS IS THE TOKEN FOR ADD NEW EXP')
                 console.log('New experience added with ID:', data.experience_id);
-                // window.location.href = `/experience/${data.experience_id}`;
+                if (data.experience_id != undefined){
+                    window.location.href = `/experience/${data.experience_id}`;
+                }
             };
 
-
-            submitData();
+            // submitData();
         } catch (error) {
             console.error(error);
         }
