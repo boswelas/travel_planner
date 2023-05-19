@@ -541,7 +541,21 @@ def TripDetail():
         data = request.get_json()
         trip_id = data["trip_id"]
         check_uid = "SELECT user_id FROM trip WHERE trip_id = %s"
-        query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
+        query = """
+            SELECT trip_has_experience.*, 
+            experience.*, 
+            ST_AsText(experience.geolocation) as geolocation, 
+            GROUP_CONCAT(DISTINCT keyword.keyword SEPARATOR ', ') as keywords,
+            GROUP_CONCAT(DISTINCT image.img_url SEPARATOR ', ') as img_url
+            FROM trip_has_experience 
+            JOIN experience ON trip_has_experience.experience_id = experience.experience_id
+            LEFT JOIN experience_has_keyword ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image ON experience_has_image.image_id = image.image_id
+            WHERE trip_has_experience.trip_id = %s
+            GROUP BY experience.experience_id;
+        """
 
         cnx = create_connection()
         cur = cnx.cursor()
@@ -552,6 +566,15 @@ def TripDetail():
             cur.execute(query, (trip_id,))
             data = cur.fetchall()
             data = [convert_to_dict(cur, row) for row in data]
+            for item in data:
+                if item['geolocation'] is not None:
+                    # Remove "POINT(" at start and ")" at end
+                    geolocation_str = item['geolocation'][6:-1]
+                    geolocation_coords = geolocation_str.split()  # Split by space
+                    # Convert to float and form a tuple
+                    geolocation_coords = tuple(map(float, geolocation_coords))
+                    # Format as a tuple string
+                    item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
             cur.close()
             cnx.close()
             return jsonify({"trip": data})
