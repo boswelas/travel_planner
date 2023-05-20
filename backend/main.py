@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
@@ -10,6 +10,8 @@ from cryptography.x509 import load_pem_x509_certificate
 from cryptography.hazmat.backends import default_backend
 
 from opencage.geocoder import OpenCageGeocode
+
+from google.cloud import storage
 
 
 app = Flask(__name__)
@@ -43,17 +45,20 @@ def verify_token(id_token):
         public_key = cert.public_key()
         payload = jwt.decode(id_token, public_key, algorithms=[
                              alg], audience='travelapp-9e26b', issuer="https://securetoken.google.com/travelapp-9e26b", options={"verify_exp": True, "verify_iat": True})
-        # Check if the token has expired
-        if payload["exp"] < datetime.utcnow().timestamp():
-            # Token has expired
-            return False
-        else:
-            # Token is valid
-            return payload['user_id']
+        # # Check if the token has expired
+        # if payload["exp"] < datetime.utcnow().timestamp():
+        #     # Token has expired
+        #     print("Token has expired - by timestamp")
+        #     print("Token expiration: ", payload["exp"])
+        #     print("Current time: ", datetime.utcnow().timestamp())
+        #     return False
+        # else:
+        #     # Token is valid
+        return payload['user_id']
 
     except jwt.ExpiredSignatureError:
         # Token has expired
-        print("Token has expired")
+        print("Token has expired - exp sig err")
         return False
     except Exception as e:
         # Token is invalid
@@ -99,8 +104,6 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
-
-
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -108,8 +111,6 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
-
-
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -118,15 +119,20 @@ def experience():
         cur = cnx.cursor()
 
         query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
-                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                JOIN experience_has_keyword
-                ON experience.experience_id = experience_has_keyword.experience_id
-                LEFT JOIN keyword
-                ON experience_has_keyword.keyword_id = keyword.keyword_id
-                GROUP BY experience.experience_id"""
+            GROUP_CONCAT(image.img_url) as img_url,
+            GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+            FROM experience
+            JOIN location
+            ON experience.location_id = location.location_id
+            JOIN experience_has_keyword
+            ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword
+            ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image
+            ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image
+            ON experience_has_image.image_id = image.image_id
+            GROUP BY experience.experience_id"""
 
         cur.execute(query)
         data = cur.fetchall()
@@ -147,29 +153,43 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
-
-
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
     cur = cnx.cursor()
 
-    query = """SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
-                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                LEFT JOIN experience_has_keyword
-                ON experience.experience_id = experience_has_keyword.experience_id
-                LEFT JOIN keyword
-                ON experience_has_keyword.keyword_id = keyword.keyword_id
-                WHERE experience.experience_id = %s
-                GROUP BY experience.experience_id"""
+    query = """
+            SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
+            GROUP_CONCAT(image.img_url) as img_url,
+            GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+            FROM experience
+            JOIN location
+            ON experience.location_id = location.location_id
+            JOIN experience_has_keyword
+            ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword
+            ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image
+            ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image
+            ON experience_has_image.image_id = image.image_id
+            WHERE experience.experience_id = %s
+            GROUP BY experience.experience_id"""
 
     cur.execute(query, (experience_id,))
     data = cur.fetchone()
 
     data = convert_to_dict(cur, data)
+
+    if data['geolocation'] is not None:
+        # Remove "POINT(" at start and ")" at end
+        geolocation_str = data['geolocation'][6:-1]
+        geolocation_coords = geolocation_str.split()  # Split by space
+        # Convert to float and form a tuple
+        geolocation_coords = tuple(map(float, geolocation_coords))
+        # Format as a tuple string
+        data['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+
     cur.close()
     cnx.close()
 
@@ -180,38 +200,55 @@ def get_experience(experience_id):
 @app.route("/experience/addNewExperience", methods=["POST"])
 def addNewExperience():
     if request.method == "POST":
-        data = request.get_json()
-        title = data["title"]
-        description = data["description"]
-        geolocation = data["geolocation"]
-        keywords = data["keywords"]
-        # image = data["image"]
-        # user_user_id = 9999
-        print(geolocation, 'GEOLOCATION')
+        try:
+            header = request.headers.get('Authorization')
+            if header is None:
+                return jsonify({"error": "Missing Authorization header"}), 401
 
-        cnx = create_connection()
-        cur = cnx.cursor()
+            token_uid = verify_token(header)
 
-        # Location logic
-        location_id = get_or_add_location(geolocation)
+            if not token_uid:
+                return jsonify({"error": "Invalid token"}), 403
 
-        # INSERT INTO experience
-        cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))',
-                    (title, description, location_id, geolocation[0], geolocation[1]))
+            title = request.form.get("title")
+            description = request.form.get("description")
+            geolocation = list(map(float, request.form.get("geolocation").split(',')))
+            keywords = [keyword.strip() for keyword in request.form.get("keywords").split(',')]
+            img_url = request.form.get("img_url")
 
-        experience_id = cur.lastrowid
+            cnx = create_connection()
+            cur = cnx.cursor()
 
-        # INSERT INTO keywords
-        for keyword in keywords:
+            # Location logic
+            location_id = get_or_add_location(geolocation)
+
+            # INSERT INTO experience
+            cur.execute('INSERT INTO experience (title, description, location_id, geolocation) VALUES (%s, %s, %s, ST_GeomFromText("POINT(%s %s)"))',
+                        (title, description, location_id, geolocation[0], geolocation[1]))
+            experience_id = cur.lastrowid
+
             cur.execute(
-                'INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
-            keyword_id = cur.lastrowid
-            cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)',
-                        (experience_id, keyword_id))
+                'INSERT INTO image (img_url) VALUES (%s)', (img_url,))
 
-        cnx.commit()
-        return jsonify({"experience_id": experience_id})
+            image_id = cur.lastrowid
+            print("image_id is %s", image_id)
+            cur.execute(
+                'INSERT INTO experience_has_image (experience_id, image_id) VALUES (%s, %s)', (experience_id, image_id))
 
+            # INSERT INTO keywords
+            for keyword in keywords:
+                cur.execute(
+                    'INSERT INTO keyword (keyword) VALUES (%s)', (keyword,))
+                keyword_id = cur.lastrowid
+                print("keyword_id is %s", keyword_id)
+                cur.execute('INSERT INTO experience_has_keyword (experience_id, keyword_id) VALUES (%s, %s)',
+                            (experience_id, keyword_id))
+
+            cnx.commit()
+            return jsonify({"experience_id": experience_id})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
 
 def get_or_add_location(geolocation):
     """
@@ -225,13 +262,6 @@ def get_or_add_location(geolocation):
     # Breaks out coordinates
     lat = geolocation[0]
     long = geolocation[1]
-
-    # # Pulls info from API
-    # OCG = OpenCageGeocode(GEOCAGE_API)
-    # results = OCG.reverse_geocode(lat, long)
-    # city = results[0]['components']['village']
-    # state = results[0]['components']['state']
-    # country = results[0]['components']['country']
 
     # Pulls info from API
     OCG = OpenCageGeocode(GEOCAGE_API)
@@ -276,21 +306,28 @@ def search():
         print(search_term)
 
         if search_term:
-            query = """SELECT DISTINCT exp.experience_id, exp.title, exp.city, exp.state, exp.country, exp.avg_rating, exp.description
-                        FROM (
-                            SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, keyword.keyword
-                                FROM experience
-                                JOIN location
-                                ON experience.location_id = location.location_id
-                                JOIN experience_has_keyword
-                                ON experience.experience_id = experience_has_keyword.experience_id
-                                JOIN keyword
-                                ON  experience_has_keyword.keyword_id = keyword.keyword_id
-                            WHERE
-                                MATCH (experience.title) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                                OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                                OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
-                        ) AS exp"""
+            query = """
+                    SELECT DISTINCT exp.experience_id, exp.title, exp.city, exp.state, exp.country, exp.avg_rating, exp.description, exp.geolocation, exp.img_url, exp.keywords
+                    FROM (
+                        SELECT experience.experience_id, experience.title, experience.description, experience.avg_rating, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation,
+                               GROUP_CONCAT(DISTINCT keyword.keyword SEPARATOR ', ') as keywords, GROUP_CONCAT(DISTINCT image.img_url) as img_url
+                        FROM experience
+                        JOIN location
+                        ON experience.location_id = location.location_id
+                        JOIN experience_has_keyword
+                        ON experience.experience_id = experience_has_keyword.experience_id
+                        LEFT JOIN keyword
+                        ON experience_has_keyword.keyword_id = keyword.keyword_id
+                        LEFT JOIN experience_has_image
+                        ON experience.experience_id = experience_has_image.experience_id
+                        LEFT JOIN image
+                        ON experience_has_image.image_id = image.image_id
+                        WHERE
+                            MATCH (experience.title) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                            OR MATCH (location.city, location.state, location.country) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                            OR MATCH (keyword.keyword) AGAINST (%s IN NATURAL LANGUAGE MODE)
+                        GROUP BY experience.experience_id
+                    ) AS exp"""
 
             cnx = create_connection()
             cursor = cnx.cursor()
@@ -302,8 +339,19 @@ def search():
         # Convert the data to a dictionary so that it shows up as an object
         payload = []
         for row in data:
-            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6]})
+            # Parse geolocation as required
+            if row[7] is not None:
+                # Remove "POINT(" at start and ")" at end
+                geolocation_str = row[7][6:-1]
+                geolocation_coords = geolocation_str.split()  # Split by space
+                # Convert to float and form a tuple
+                geolocation_coords = tuple(map(float, geolocation_coords))
+                # Format as a tuple string
+                geolocation = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+            else:
+                geolocation = None
+
+            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4], 'rating': row[5], 'description': row[6], 'geolocation': geolocation, 'img_url': row[8], 'keywords': row[9]})
 
         return jsonify(payload)
 
@@ -385,25 +433,6 @@ def signup():
 
 ############################# END route for Signup #############################
 
-############################# BEGIN route for GetID #############################
-@app.route('/GetID', methods=['POST'])
-def GetID():
-    if request.method == "POST":
-        data = request.get_json()
-        email = data["email"]
-        query = ("SELECT * FROM user WHERE email = (%s)")
-        # Opens connection & cursor
-        cnx = create_connection()
-        cur = cnx.cursor()
-
-        cur.execute(query, (email,))
-
-        data = cur.fetchall()
-        cur.close()
-        cnx.close()
-        return jsonify({"user": data})
-    ############################# END route for GetID #############################
-
 ############################# BEGIN route for Trip #############################
 
 
@@ -437,17 +466,46 @@ def addTrip():
         data = request.get_json()
         name = data["name"]
         user_id = data["user_id"]
+        background_photo = data["background_photo"]
         if token_uid == user_id:
-            query = "INSERT INTO trip (name, user_id) VALUES (%s, %s)"
-
+            query = "INSERT INTO trip (name, user_id, background_photo) VALUES (%s, %s, %s)"
+            select_query = "SELECT * FROM trip WHERE user_id = %s"
             cnx = create_connection()
             cur = cnx.cursor()
 
             cur.execute(
-                query, (name, user_id))
+                query, (name, user_id, background_photo))
             cnx.commit()
 
-        return jsonify({"success": True})
+            cur.execute(select_query, (user_id, ))
+            data = cur.fetchall()
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
+    return jsonify({"success": False})
+
+
+@app.route('/updateTripName', methods=['POST'])
+def updateTripName():
+    if request.method == "POST":
+        header = request.headers.get('Authorization')
+        token_uid = verify_token(header)
+        if (token_uid):
+            data = request.get_json()
+            trip_id = data["trip_id"]
+            name = data["name"]
+            query = "UPDATE trip SET name = %s WHERE trip_id = %s AND user_id = %s"
+            select_query = "SELECT * FROM trip WHERE user_id = %s"
+            cnx = create_connection()
+            cur = cnx.cursor()
+            cur.execute(
+                query, (name, trip_id, token_uid))
+            cnx.commit()
+            cur.execute(select_query, (token_uid, ))
+            data = cur.fetchall()
+            cur.close()
+            cnx.close()
+            return jsonify({"trip": data})
     return jsonify({"success": False})
 
 
@@ -483,7 +541,21 @@ def TripDetail():
         data = request.get_json()
         trip_id = data["trip_id"]
         check_uid = "SELECT user_id FROM trip WHERE trip_id = %s"
-        query = ("SELECT * FROM trip_has_experience JOIN experience ON trip_has_experience.experience_id = experience.experience_id WHERE trip_has_experience.trip_id = %s;")
+        query = """
+            SELECT trip_has_experience.*, 
+            experience.*, 
+            ST_AsText(experience.geolocation) as geolocation, 
+            GROUP_CONCAT(DISTINCT keyword.keyword SEPARATOR ', ') as keywords,
+            GROUP_CONCAT(DISTINCT image.img_url SEPARATOR ', ') as img_url
+            FROM trip_has_experience 
+            JOIN experience ON trip_has_experience.experience_id = experience.experience_id
+            LEFT JOIN experience_has_keyword ON experience.experience_id = experience_has_keyword.experience_id
+            LEFT JOIN keyword ON experience_has_keyword.keyword_id = keyword.keyword_id
+            LEFT JOIN experience_has_image ON experience.experience_id = experience_has_image.experience_id
+            LEFT JOIN image ON experience_has_image.image_id = image.image_id
+            WHERE trip_has_experience.trip_id = %s
+            GROUP BY experience.experience_id;
+        """
 
         cnx = create_connection()
         cur = cnx.cursor()
@@ -494,6 +566,15 @@ def TripDetail():
             cur.execute(query, (trip_id,))
             data = cur.fetchall()
             data = [convert_to_dict(cur, row) for row in data]
+            for item in data:
+                if item['geolocation'] is not None:
+                    # Remove "POINT(" at start and ")" at end
+                    geolocation_str = item['geolocation'][6:-1]
+                    geolocation_coords = geolocation_str.split()  # Split by space
+                    # Convert to float and form a tuple
+                    geolocation_coords = tuple(map(float, geolocation_coords))
+                    # Format as a tuple string
+                    item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
             cur.close()
             cnx.close()
             return jsonify({"trip": data})
@@ -561,34 +642,50 @@ def deleteExperienceFromTrip():
 def LatestExp():
     if request.method == "GET":
         search_term = request.args.get("count")
-        print(search_term)
 
         if search_term is None:
             # Defaults to 3
             search_term = 3
 
-        query = """
-                SELECT DISTINCT experience.experience_id, experience.title, location.city, location.state, location.country, experience.avg_rating, experience.description
-                FROM experience
-                JOIN location
-                ON experience.location_id = location.location_id
-                ORDER BY experience.experience_id DESC
-                LIMIT %s"""
-
         cnx = create_connection()
         cursor = cnx.cursor()
 
-        cursor.execute(query, (search_term,))
+        query = """
+                SELECT experience.experience_id, experience.title, location.city, location.state, location.country, ST_AsText(experience.geolocation) as geolocation, experience.avg_rating, experience.description, 
+                GROUP_CONCAT(image.img_url) as img_url,
+                GROUP_CONCAT(keyword.keyword SEPARATOR ', ') as keywords
+                FROM experience
+                JOIN location
+                ON experience.location_id = location.location_id
+                JOIN experience_has_keyword
+                ON experience.experience_id = experience_has_keyword.experience_id
+                LEFT JOIN keyword
+                ON experience_has_keyword.keyword_id = keyword.keyword_id
+                LEFT JOIN experience_has_image
+                ON experience.experience_id = experience_has_image.experience_id
+                LEFT JOIN image
+                ON experience_has_image.image_id = image.image_id
+                GROUP BY experience.experience_id
+                ORDER BY experience.experience_id DESC
+                LIMIT %s"""
 
+        cursor.execute(query, (search_term,))
         data = cursor.fetchall()
 
-        # Convert the data to a dictionary so that it shows up as an object
-        payload = []
-        for row in data:
-            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3],
-                           'country': row[4], 'rating': row[5], 'description': row[6]})
+        data = [convert_to_dict(cursor, row) for row in data]
 
-        return jsonify(payload)
+        for item in data:
+            if item['geolocation'] is not None:
+                # Remove "POINT(" at start and ")" at end
+                geolocation_str = item['geolocation'][6:-1]
+                geolocation_coords = geolocation_str.split()  # Split by space
+                # Convert to float and form a tuple
+                geolocation_coords = tuple(map(float, geolocation_coords))
+                # Format as a tuple string
+                item['geolocation'] = f"({geolocation_coords[0]}, {geolocation_coords[1]})"
+        cursor.close()
+        cnx.close()
+        return jsonify(data=data)
 
 ############################# END route for Latest Experience #############################
 

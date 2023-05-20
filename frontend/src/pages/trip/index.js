@@ -5,18 +5,8 @@ import { useAuth } from '@/components/AuthContext.js';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import styles from '@/styles/Trip.module.css';
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    backgroundColor: '#fff', // Set the desired background color here
-    border: '2px solid #000',
-    boxShadow: '24px',
-    p: 4
-};
 
 const Trip = () => {
     const [tripData, setTripData] = useState([]);
@@ -43,8 +33,6 @@ const Trip = () => {
                 );
 
                 const data = await response.json();
-                console.log(data);
-                console.log(data.trip);
                 if (data.trip === 'invalid') {
                     setTripData([]);
                 } else {
@@ -68,9 +56,14 @@ const Trip = () => {
         setNewTripTitle('');
     };
 
+    function getRandomIndex() {
+        return Math.floor(Math.random() * 6);
+    }
+
     const handleAddTripSubmit = async (event) => {
         event.preventDefault();
         try {
+            const randomIndex = getRandomIndex(0, 5);
             const token = await getToken();
             const response = await fetch(
                 'https://travel-planner-production.up.railway.app/addTrip',
@@ -83,14 +76,16 @@ const Trip = () => {
                     body: JSON.stringify({
                         user_id: user.uid,
                         name: newTripTitle,
+                        background_photo: randomIndex
                     }),
                 }
             );
 
             const data = await response.json();
-            setTripData([data.trip]);
+            console.log(tripData);
+            console.log(data.trip);
+            setTripData(data.trip);
             handleCloseAddTrip();
-            window.location.reload();
         } catch (error) {
             console.error(error);
         }
@@ -102,9 +97,8 @@ const Trip = () => {
                 <h1>Please Log In</h1>
             ) : (
                 <>
+                    <button className={styles.Button} onClick={handleAddTrip}>Create New Trip</button>
                     <h1>My Trips</h1>
-
-                    <button onClick={handleAddTrip}>New Trip</button>
 
                     <Modal
                         open={showAddTripPopup}
@@ -112,8 +106,8 @@ const Trip = () => {
                         aria-labelledby="modal-title"
                         aria-describedby="modal-description"
                     >
-                        <div style={style}>
-                            <Typography variant="h6" component="h2" id="modal-title">
+                        <div className={styles.Modal}>
+                            <Typography variant="h6" component="h2" id="modal-title" style={{ marginTop: 30 }}>
                                 Add New Trip
                             </Typography>
                             <form onSubmit={handleAddTripSubmit} style={{ border: 'none' }}>
