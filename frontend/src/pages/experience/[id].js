@@ -19,21 +19,34 @@ export async function getServerSideProps(context) {
 const ExperienceDetail = ({ experience }) => {
     const router = useRouter();
     
-    const coordinates = experience.geolocation
-        .slice(1, -1)
-        .split(',')
-        .map(coord => parseFloat(coord.trim()));
-
 
     if (router.isFallback) {
         return <div>Loading...</div>;
+    }
+
+    const generateMap = () => {
+
+        console.log("experience.geolocation")
+        console.log(experience.geolocation)
+
+        if (experience.geolocation === null | experience.geolocation === undefined | experience.geolocation === '') {
+            return
+        }
+    
+        const coordinates = experience.geolocation
+        .slice(1, -1)
+        .split(',')
+        .map(coord => parseFloat(coord.trim()));
+    
+        return <MapFrame coordinates={coordinates}/>
     }
 
     return (
         <div>
             <h1>{experience.title}</h1>
             <ExpCard props={experience} showViewMore={false} showBackButton={true} />
-            <MapFrame coordinates={coordinates}/>
+
+            {generateMap()}
 
         </div>
     );
