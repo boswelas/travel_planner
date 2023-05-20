@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import ExpCard from '@/components/ExpCard';
+import MapFrame from '@/components/MapFrame';
 
 export async function getServerSideProps(context) {
     const { id } = context.params;
@@ -24,6 +25,10 @@ const ExperienceDetail = ({ experience }) => {
         <div>
             <h1>{experience.title}</h1>
             <ExpCard props={experience} showViewMore={false} showBackButton={true} />
+
+            <div>
+                <MapFrame />
+            </div>
         </div>
     );
 };
