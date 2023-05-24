@@ -133,3 +133,22 @@
     color: green;
 
 }
+
+.AddNewExpButton {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #fff;
+    background-color: #1976D2;
+    border: 2px solid #1976D2;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.AddNewExpButton:hover{
+    color: #1976D2;
+    background-color: #F4F6F6;
+}
