@@ -1,7 +1,6 @@
 import styles from '../../styles/ExpCard.module.css';
 import Link from 'next/link'
 
-import ExpCard from '@/components/ExpCard'
 import ExpCardGrid from '@/components/ExpCardGrid';
 
 export async function getServerSideProps() {
@@ -28,9 +27,9 @@ const Experience = ({ experience }) => {
         <div>
             <h1>Experiences</h1>
             <p className={styles.CardLink}>
-                <Link href="/experience/addNewExperience">
-                    Add New Experience
-                </Link>
+            <Link href="/experience/addNewExperience" className={styles.AddNewExpButton}>
+                Create New Experience
+            </Link>
             </p>
             {grid}
         </div>
