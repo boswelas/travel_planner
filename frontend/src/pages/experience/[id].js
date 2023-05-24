@@ -33,19 +33,19 @@ const ExperienceDetail = ({ experience }) => {
         return <div>Loading...</div>;
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const rating = await handleGetRating(getToken, experience.experience_id);
-            setUserRating(rating || 0);
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const rating = await handleGetRating(getToken, experience.experience_id);
+    //         setUserRating(rating || 0);
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
 
-    const handleRatingChange = (event, newValue) => {
-        addUserRating(getToken, experience.experience_id, newValue);
-        setUserRating(newValue);
-    };
+    // const handleRatingChange = (event, newValue) => {
+    //     addUserRating(getToken, experience.experience_id, newValue);
+    //     setUserRating(newValue);
+    // };
 
 
     const generateMap = () => {
@@ -69,10 +69,10 @@ const ExperienceDetail = ({ experience }) => {
         <div>
             <div className={styles.TitleRatingContainer}>
                 <h1 className={styles.Header}>{experience.title}</h1>
-                <div className={styles.Rating}>
+                {/* <div className={styles.Rating}>
                     <Rating name="rating" value={userRating} onChange={handleRatingChange} />
                     {experience.avg_rating && <span>{experience.avg_rating}/5 average</span>}
-                </div>
+                </div> */}
             </div>
             <div className={styles.Container}>
                 <PlaceIcon style={{ fontSize: '18px' }} />
