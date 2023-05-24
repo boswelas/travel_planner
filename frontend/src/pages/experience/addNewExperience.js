@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/components/AuthContext';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import styles from '@/styles/ExpForm.module.css'
 
 const ExperienceForm = () => {
     const { getToken, user } = useAuth();
@@ -9,6 +10,9 @@ const ExperienceForm = () => {
     const [geolocation, setGeolocation] = useState([0, 0]);
     const [keywords, setKeywords] = useState('');
     const [image, setImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [inputKey, setInputKey] = useState(Date.now());
+    const [isImageSelected, setIsImageSelected] = useState(false);
     const storage = getStorage();
 
 
@@ -111,6 +115,11 @@ const ExperienceForm = () => {
         }
     };
 
+    const handleImageChange = (event) => {
+        setImage(event.target.files[0]);
+        setImagePreview(URL.createObjectURL(event.target.files[0])); 
+        setIsImageSelected(true);
+    }
 
     const handleClear = () => {
         setTitle('');
@@ -118,46 +127,71 @@ const ExperienceForm = () => {
         setGeolocation([0, 0]);
         setKeywords('');
         setImage(null);
+        setImagePreview(null);
+        setInputKey(Date.now());
     };
+
+    const adjust_textarea = (h) => {
+        h.target.style.height = "20px";
+        h.target.style.height = (h.target.scrollHeight)+"px";
+    }
+    
 
     return (
 
         <div>{!user ? (
             <h1>Please Log In</h1>
         ) : (<>
-            <h2>Create New Experience</h2>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Experience Title:
-                    <input type="text" value={title} required onChange={(event) => setTitle(event.target.value)} />
-                </label>
-                <br />
-                <label>
-                    Description:
-                    <textarea value={description} required onChange={(event) => setDescription(event.target.value)} />
-                </label>
-                <br />
-                <label>
-                    Geolocation (latitude, longitude):
-                    <input type="number" value={geolocation[0]} required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
-                    <input type="number" value={geolocation[1]} required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
-                </label>
-                <br />
-                <label>
-                    Keywords (comma-separated):
-                    <input type="text" value={keywords} required onChange={(event) => setKeywords(event.target.value)} />
-                </label>
-                <br />
-                <label>
-                    Image:
-                    <input type="file" accept="image/*" onChange={(event) => setImage(event.target.files[0])} />
-                </label>
-                <br />
-                <br />
-                <button type="submit">Submit</button>
-                <button type="button" onClick={handleClear}>Clear</button>
-                <button type="button" onClick={() => window.history.back()}>Cancel</button>
-            </form></>)}
+            <h2 className={styles.title}>Create New Experience</h2>
+            <form onSubmit={handleSubmit} className={styles.form}>
+                <div className={styles.container}>
+                    <div className={styles.leftFormContent}>
+                        <label>
+                            Image:
+                        </label>
+                        <input id="file-upload" key={inputKey} type="file" accept="image/*" onChange={handleImageChange} />
+                        {imagePreview && <img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px" }} />}
+                    </div>
+                    <div className={styles.rightFormContent}>
+                        <ul>
+                            <li>
+                                <label>Experience Title:</label>
+                                <input type="text" value={title} required onChange={(event) => setTitle(event.target.value)} />
+                                <span>Enter the experience title</span>
+                            </li>
+                            <li>
+                                <label>Description:</label>
+                                <textarea value={description} required onChange={(event) => setDescription(event.target.value)} onKeyUp={adjust_textarea}></textarea>
+                                <span>Enter a description</span>
+                            </li>
+                            <li className={styles.coordinates}>
+                                <label>Geolocation:</label>
+                                <div>
+                                    <span>(</span>
+                                    <input type="number" value={geolocation[0] || ""} placeholder='Latitude' required onChange={(event) => setGeolocation([event.target.value, geolocation[1]])} />
+                                    <span>)</span>
+                                    <span>,</span>
+                                    <span>(</span>
+                                    <input type="number" value={geolocation[1] || ""} placeholder='Longitude' required onChange={(event) => setGeolocation([geolocation[0], event.target.value])} />
+                                    <span>)</span>
+                                </div>
+                                <span>Enter the coordinates</span>
+                            </li>
+                            <li>
+                                <label>Keywords:</label>
+                                <input type="text" value={keywords} required onChange={(event) => setKeywords(event.target.value)} />
+                                <span>Enter keywords (separate with comma)</span>
+                            </li>
+                            <li>
+                                <input type="submit" value="Submit" />
+                                <input type="button" value="Clear" onClick={handleClear} />
+                                <input type="button" value="Cancel" onClick={() => window.history.back()} />
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </form>
+        </>)}
         </div>
     );
 };
