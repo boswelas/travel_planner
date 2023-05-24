@@ -2,20 +2,21 @@
     text-align: left;
     font-size: 28px;
     font-family: 'Abel', sans-serif;
+    margin-bottom: 0;
 }
 
 .form{
 	max-width: auto;
-	margin:20px auto;
-	background:#fff;
-	padding:20px;
+	background:none;
     font-family: 'Abel', sans-serif;
+    border: none;
+    margin: 0px;
 }
 
 .form ul{
 	list-style:none;
-	padding:0;
-	margin:0;	
+	padding:0px;
+	margin:0px;	
 }
 
 .form li{
@@ -37,7 +38,7 @@
 	display: block;
 	float: left;
 	margin-top: -19px;
-	background: #FFFFFF;
+	background: #F4F6F6;
 	height: 14px;
 	padding: 2px 5px 2px 5px;
 	color: #5C5C5C;
@@ -53,6 +54,7 @@
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
+    background-color: #F4F6F6;
 	width: 100%;
 	display: block;
 	outline: none;
@@ -73,12 +75,12 @@
 }
 
 .form li > span{
-	background: #F3F3F3;
+	background: #e7e9e9;
 	display: block;
 	padding: 3px;
 	margin: 0 -9px -9px -9px;
 	text-align: center;
-	color: #C0C0C0;
+	color: #9a9b9b;
 	font-size: 11px;
 }
 
@@ -114,7 +116,7 @@
     display: block;
     float: left;
     margin-top: -19px;
-    background: #FFFFFF;
+    background: #F4F6F6;
     height: 14px;
     padding: 2px 5px 2px 5px;
     color: #5C5C5C;
@@ -151,6 +153,7 @@
 
 .rightFormContent {
     width: 70%;
+    width: calc(100% - 30% - 100px);
 }
 
 .leftFormContent {
@@ -160,6 +163,7 @@
     display: block;
     padding: 9px; 
     margin-top: 30px; 
+    margin-right: 100px;
     border-radius: 3px; 
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
