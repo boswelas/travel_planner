@@ -2,12 +2,12 @@ import styles from '../../styles/ExpCard.module.css';
 import Link from 'next/link'
 
 import ExpCard from '@/components/ExpCard'
+import ExpCardGrid from '@/components/ExpCardGrid';
 
 export async function getServerSideProps() {
     const res = await fetch('https://travel-planner-production.up.railway.app/experience');
 //     const res = await fetch('http://127.0.0.1:5001/experience');
     const data = await res.json();
-    console.log(data.data, 'DATA')
 
     return {
         props: {
@@ -17,6 +17,13 @@ export async function getServerSideProps() {
 }
 
 const Experience = ({ experience }) => {
+    const genGrid = (dataArrays) => {
+        let temp = <ExpCardGrid data = {dataArrays}/>
+        return temp;
+    }
+
+    let grid = genGrid(experience);
+
     return (
         <div>
             <h1>Experiences</h1>
@@ -25,10 +32,7 @@ const Experience = ({ experience }) => {
                     Add New Experience
                 </Link>
             </p>
-            {experience.map((experience) => (
-                <ExpCard key={experience.experience_id} props={experience} />
-            ))}
-
+            {grid}
         </div>
     )
 }
