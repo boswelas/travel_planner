@@ -1,4 +1,3 @@
-
 .HomePicContainer {
   position: relative;
   margin-left: 5%;
@@ -21,41 +20,46 @@
 }
 
 .header {
-    float: center;
-    text-align: center;
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    min-width: 100%;
-  }
+  float: center;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100%;
+}
 
-  .header a {
-    margin-left: 40px;
-    margin-right: 40px;
+.header a {
+  margin-left: 40px;
+  margin-right: 40px;
 
-  }
+}
 
-  .header .logo {
-    color: black;
-    margin-right: auto;
-    font-size: x-large;
-  }
+.header .logo {
+  color: black;
+  margin-right: auto;
+  font-size: x-large;
+}
 
-  .top {
-    padding: 1%
-  }
+.top {
+  padding: 1%
+}
 
-    .top a {
-      color: rgb(255, 255, 255);
-      font-weight: bold;
-      text-decoration: none;
-      font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    }
+.top a {
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  text-decoration: none;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
 
-    .top a:hover{
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-decoration-style: solid;
-    }
+.top a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-style: solid;
+}
 
 
+.subheader {
+  font-size: x-large;
+  text-align: left;
+  margin-left: 2.75em;
+}

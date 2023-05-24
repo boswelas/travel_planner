@@ -1,5 +1,5 @@
-const handleDeleteFromTrip = async (event) => {
-    event.preventDefault();
+export const handleDeleteFromTrip = async (experience_id, trip_id) => {
+   
     try {
         const response = await fetch('https://travel-planner-production.up.railway.app/deleteExperienceFromTrip', {
             method: 'POST',
@@ -16,7 +16,6 @@ const handleDeleteFromTrip = async (event) => {
         window.location.reload();
     } catch (error) {
         console.error(error);
+        return null;
     }
 };
-
-export default handleDeleteFromTrip;

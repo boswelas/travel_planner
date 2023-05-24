@@ -1,5 +1,6 @@
 // Adapted from Material-UI: https://mui.com/material-ui/react-menu/
 
+import styles from '@/styles/ExpCard.module.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/components/AuthContext';
 import Button from '@mui/material/Button';
@@ -39,7 +40,7 @@ export default function AddToTripDropdown({ experience_id }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     trip_id,
@@ -102,6 +103,13 @@ export default function AddToTripDropdown({ experience_id }) {
     return (
         <Stack direction="row" spacing={2}>
             <div>
+                {addedToTrip && (
+                    <div className = {styles.Added}>
+                        Added!
+                    </div>
+                )}
+            </div>
+            <div>
                 <Button
                     ref={anchorRef}
                     id="composition-button"
@@ -146,11 +154,6 @@ export default function AddToTripDropdown({ experience_id }) {
                 </Popper>
             </div>
 
-            {addedToTrip && (
-                <div style={{ marginTop: '10px', color: 'green' }}>
-                    Added to your trip!
-                </div>
-            )}
         </Stack>
     );
 }
