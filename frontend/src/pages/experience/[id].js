@@ -63,7 +63,7 @@ const ExperienceDetail = ({ experience }) => {
             .map(coord => parseFloat(coord.trim()));
 
         return <MapFrame coordinates={coordinates} />
-    }
+    };
 
     return (
         <div>
