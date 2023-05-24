@@ -85,9 +85,9 @@ const ExperienceDetail = ({ experience }) => {
                 <div className={styles.ImageContainer} >
                     <img className={styles.Photo} src={experience.img_url} alt={experience.title} />
                 </div>
-                {/* <div className={styles.MapContainer}>
+                <div className={styles.MapContainer}>
                     {generateMap()}
-                </div> */}
+                </div>
             </div>
             <div><h3 className={styles.Header}>Description</h3></div>
             <p className={styles.Description}>{experience.description}</p>
