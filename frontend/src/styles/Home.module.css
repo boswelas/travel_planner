@@ -48,7 +48,7 @@
   color: rgb(255, 255, 255);
   font-weight: bold;
   text-decoration: none;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Abel', sans-serif;
 }
 
 .top a:hover {
@@ -59,7 +59,8 @@
 
 
 .subheader {
-  font-size: x-large;
+  font-size: xx-large;
   text-align: left;
   margin-left: 2.75em;
+  margin-bottom: .25em;
 }
