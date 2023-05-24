@@ -12,9 +12,9 @@ export async function getServerSideProps() {
   console.log(data.data, 'DATA')
 
   return {
-      props: {
-          experience: data.data,
-      },
+    props: {
+      experience: data.data,
+    },
   };
 }
 
@@ -29,24 +29,24 @@ export default function Home({ user, experience }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        
-      <div className={styles.top}>
-        <div className={styles.HomePicContainer} >
-          <Image 
-            className={styles.HomePic}
-            src="https://firebasestorage.googleapis.com/v0/b/travelapp-9e26b.appspot.com/o/Balloons-Over-ABQ-LR2.jpg.webp?alt=media&token=3a9ef041-cbe2-4bc7-a4b3-c4d6f921b001" 
-            quality={100}
-            style={{ borderRadius: '20px', opacity: '0.9' }}
-            fill
-          />
-          <div className={styles.HeaderContainer}>
-            <Header user={user} />
+
+        <div className={styles.top}>
+          <div className={styles.HomePicContainer} >
+            <Image
+              className={styles.HomePic}
+              src="https://firebasestorage.googleapis.com/v0/b/travelapp-9e26b.appspot.com/o/Balloons-Over-ABQ-LR2.jpg.webp?alt=media&token=3a9ef041-cbe2-4bc7-a4b3-c4d6f921b001"
+              quality={100}
+              style={{ borderRadius: '20px', opacity: '0.9' }}
+              fill
+            />
+            <div className={styles.HeaderContainer}>
+              <Header user={user} />
+            </div>
           </div>
         </div>
-      </div>
 
-        <h3 class='subheader'>
-          Latest Experiences...
+        <h3 className={styles.subheader}>
+          Latest Experiences
         </h3>
         <div>
           <ExpCardGrid data={experience} />

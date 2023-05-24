@@ -1,23 +1,32 @@
 .Card {
     background-color: rgb(255, 255, 255);
-    border-color: rgb(88, 88, 88);
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 20px;
-    max-width: 90%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 1.2em;
+    height: 23em;
+    width: 18.5em;
+    margin: 0.6em;
     float: center;
     text-align: center;
-    padding: 5px;
+    padding: 0.3em;
     position: relative;
+
+}
+
+.CardTitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .Card h3 {
-    font-size: x-large;
-    min-width: 100%;
+    font-size: large;
     text-align: left;
-    margin: 10px;
     color: black;
-    margin-top: 35px;
+    min-width: 100%;
+    /* margin: .6em; */
+    margin-top: 2em;
+    margin-bottom: 0em;
+    margin-left: .7em;
 }
 
 .Card a {
@@ -29,48 +38,59 @@
     float: center;
 }
 
+.CardLocation {
+    font-size: small;
+    text-align: left;
+    margin-top: .5em;
+    margin-left: 1em;
+    margin-bottom: .5em;
+}
+
 .AddToTripButton {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: .5em;
+    right: .5em;
+    font-size: x-small;
 }
 
 .Photo {
-    float: center;
-    align-self: center;
-    background-color: rgb(147, 147, 247);
-    border-radius: 20px;
-    margin: 10px;
-    height: 400px;
+    width: 17em;
+    height: 11em;
+    border-radius: 7px;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-bottom: 2em;
 }
 
 .Image {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.UserName {
-    font-size: small;
-    text-align: left;
-    min-width: 100%;
-    margin: 10px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .CardRating {
-    font-size: x-large;
+    font-size: smaller;
     font-weight: bold;
     text-align: left;
     min-width: 100%;
-    margin: 10px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    margin-bottom: 1.25em;
+    margin-left: .7em;
 }
 
 .CardLink {
     text-align: right;
     color: black;
-    margin-right: auto;
+    margin-right: .75em;
+    font-size: smaller;
 }
 
 .CardDescription {
@@ -91,4 +111,24 @@
     grid-row-gap: 10px;
     padding-left: 10%;
     padding-right: 10%;
+}
+
+.DeleteButton {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #F1948A;
+    border-color: #F1948A;
+    padding: 10px 20px;
+    font-size: 14px;
+    box-shadow: none;
+    border-radius: 10px;
+    margin-bottom: 1em;
+}
+
+.Added {
+    margin-top: .5em;
+    color: green;
+
 }
