@@ -29,9 +29,21 @@ const ExperienceDetail = ({ experience }) => {
     const { user, getToken } = useAuth();
     const [userRating, setUserRating] = useState(0);
 
-    if (router.isFallback) {
-        return <div>Loading...</div>;
-    }
+    useEffect(() => {
+        if (!router.isFallback) {
+            const fetchData = async () => {
+                const rating = await handleGetRating(getToken, experience.experience_id);
+                setUserRating(rating || 0);
+            };
+
+            fetchData();
+        }
+    }, [router.isFallback]);
+
+
+    // if (router.isFallback) {
+    //     return <div>Loading...</div>;
+    // }
 
     // useEffect(() => {
     //     const fetchData = async () => {
@@ -42,11 +54,10 @@ const ExperienceDetail = ({ experience }) => {
     //     fetchData();
     // }, []);
 
-    // const handleRatingChange = (event, newValue) => {
-    //     addUserRating(getToken, experience.experience_id, newValue);
-    //     setUserRating(newValue);
-    // };
-
+    const handleRatingChange = (event, newValue) => {
+        addUserRating(getToken, experience.experience_id, newValue);
+        setUserRating(newValue);
+    };
 
     const generateMap = () => {
 
@@ -69,10 +80,10 @@ const ExperienceDetail = ({ experience }) => {
         <div>
             <div className={styles.TitleRatingContainer}>
                 <h1 className={styles.Header}>{experience.title}</h1>
-                {/* <div className={styles.Rating}>
+                <div className={styles.Rating}>
                     <Rating name="rating" value={userRating} onChange={handleRatingChange} />
                     {experience.avg_rating && <span>{experience.avg_rating}/5 average</span>}
-                </div> */}
+                </div>
             </div>
             <div className={styles.Container}>
                 <PlaceIcon style={{ fontSize: '18px' }} />
@@ -89,7 +100,7 @@ const ExperienceDetail = ({ experience }) => {
                     {generateMap()}
                 </div>
             </div>
-            <div><h3 className={styles.Header}>Description</h3></div>
+            <div><h3 className={styles.DescriptionTitle}>Description</h3></div>
             <p className={styles.Description}>{experience.description}</p>
             <div className={styles.Keywords}><strong style={{ fontWeight: 'bold' }}>Keywords: </strong> {experience.keywords}</div>
 
