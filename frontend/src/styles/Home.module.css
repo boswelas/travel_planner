@@ -5,7 +5,16 @@
   width: 90%;
   height: 35em;
   border-radius: 20px;
+  overflow: hidden;
 }
+
+.HomePic {
+  overflow: hidden;
+  object-fit: cover;
+  border-radius: 20px;
+  object-position: 50% 40%;
+}
+
 
 .HeaderContainer {
   position: absolute;
