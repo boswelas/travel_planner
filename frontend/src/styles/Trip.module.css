@@ -11,9 +11,9 @@
 }
 
 .Button {
-    background-color: #A3E4D7;
-    ;
-    border-color: #A3E4D7;
+    background-color: #1976D2;
+    color: #fff;
+    border-color: #1976D2;
     position: absolute;
     right: 100px;
     padding: 10px 20px;

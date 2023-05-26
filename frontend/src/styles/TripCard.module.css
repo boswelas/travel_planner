@@ -5,8 +5,8 @@
     margin-bottom: 20px;
     text-align: center;
     padding: 5px;
-    height: 400px;
-    width: 250px;
+    height: 23em;
+    width: 16em;
     position: relative;
 }
 
@@ -15,7 +15,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: larger;
+    font-size: x-large;
     min-width: 100%;
     text-align: center;
     margin: 10px;
@@ -48,8 +48,9 @@
 }
 
 .ViewMore {
-    background-color: #A3E4D7;
-    border-color: #A3E4D7;
+    background-color: #1976D2;
+    border-color: #1976D2;
+    color: #fff;
     position: absolute;
     bottom: 30px;
     left: 30px;
@@ -61,8 +62,9 @@
 
 .DeleteButton {
     position: absolute;
-    background-color: #F1948A;
-    border-color: #F1948A;
+    background-color: #d2191a;
+    border-color: #d2191a;
+    color: #fff;
     bottom: 30px;
     right: 30px;
     padding: 10px 20px;
