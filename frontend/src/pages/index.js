@@ -36,7 +36,7 @@ export default function Home({ user, experience }) {
               className={styles.HomePic}
               src="https://firebasestorage.googleapis.com/v0/b/travelapp-9e26b.appspot.com/o/Balloons-Over-ABQ-LR2.jpg.webp?alt=media&token=3a9ef041-cbe2-4bc7-a4b3-c4d6f921b001"
               quality={100}
-              style={{ borderRadius: '20px', opacity: '0.9' }}
+              style={{ borderRadius: '20px', opacity: '0.8' }}
               fill
             />
             <div className={styles.HeaderContainer}>
