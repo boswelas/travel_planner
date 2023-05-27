@@ -61,7 +61,7 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             </h3>
 
             <p className={styles.CardLocation}>
-                {city}, {state}, {country}
+                {city !== "Unknown" ? city + ", " : ""} {state !== "Unknown" ? state + ", " : ""} {country !== "Unknown" ? country : ""}
             </p>
 
             <p className={styles.CardRating}>
