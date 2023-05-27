@@ -17,11 +17,13 @@ const Header = () => {
 
                 {user ? (
                     <>
-                        <div>
-                            <h4>Welcome {user.displayName}</h4>
-                            <Link href="/">
-                                <span onClick={logout}>Sign out</span>
-                            </Link>
+                        <div className={styles.WelcomeContainer}>
+                            <div>
+                                <h4 className={styles.WelcomeMessage}>Welcome {user.displayName}</h4>
+                                <Link href="/">
+                                    <span className={styles.SignOutLink} onClick={logout}>Sign out</span>
+                                </Link>
+                            </div>
                         </div>
                     </>
                 ) : (

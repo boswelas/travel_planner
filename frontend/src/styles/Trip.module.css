@@ -2,24 +2,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* Align the title horizontally in the center */
     font-size: medium;
 }
 
 .Title h1 {
-    margin-right: 10px;
-}
-
-.Button {
-    background-color: #1976D2;
-    color: #fff;
-    border-color: #1976D2;
-    position: absolute;
-    right: 100px;
-    padding: 10px 20px;
-    font-size: 14px;
-    box-shadow: none;
-    border-radius: 10px;
+    margin-top: 0em;
 }
 
 .Modal {
@@ -35,4 +22,31 @@
     padding: 16px;
     border: none;
     border-radius: 5px;
+}
+
+.CardLink {
+    text-align: right;
+    color: black;
+    margin-right: 15%;
+    font-size: smaller;
+}
+
+.AddNewTripButton {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #fff;
+    background-color: #1976D2;
+    border: 1px solid #1976D2;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.AddNewTripButton:hover {
+    color: #1976D2;
+    background-color: #F4F6F6;
 }

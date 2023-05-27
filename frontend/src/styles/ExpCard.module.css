@@ -50,6 +50,7 @@
     top: .5em;
     right: .5em;
     font-size: x-small;
+    z-index: 1;
 }
 
 .Photo {
@@ -65,6 +66,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     margin-bottom: 2em;
+    z-index: 0;
 }
 
 .Image {
@@ -88,7 +90,7 @@
 .CardLink {
     text-align: right;
     color: black;
-    margin-right: .75em;
+    margin-right: 10%;
     font-size: smaller;
 }
 
@@ -110,21 +112,6 @@
     grid-row-gap: 10px;
     padding-left: 10%;
     padding-right: 10%;
-}
-
-.DeleteButton {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #d2191a;
-    border-color: #d2191a;
-    color: #fff;
-    padding: 10px 20px;
-    font-size: 14px;
-    box-shadow: none;
-    border-radius: 10px;
-    margin-bottom: 1em;
 }
 
 .Added {
@@ -149,5 +136,37 @@
 
 .AddNewExpButton:hover {
     color: #1976D2;
+    background-color: #F4F6F6;
+}
+
+.DeleteLink {
+    text-align: right;
+    color: white;
+    margin-right: .75em;
+    font-size: smaller;
+}
+
+.DeleteExpButton {
+    display: inline-block;
+    padding: 5px 10px;
+    color: white !important;
+    background-color: #d2191a;
+    border: 1px solid #d2191a;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 1em;
+
+}
+
+.DeleteExpButton:hover {
+    color: #d2191a !important;
     background-color: #F4F6F6;
 }

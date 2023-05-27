@@ -9,6 +9,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import EditIcon from '@mui/icons-material/Edit';
+import Link from 'next/link';
+
 
 
 const TripCard = ({ props }) => {
@@ -109,9 +111,9 @@ const TripCard = ({ props }) => {
                                 value={updatedName}
                                 onChange={handleNameChange}
                             />
-                            <div className={styles.ButtonGroup}>
-                                <Button onClick={handleSaveClick}>Save</Button>
-                                <Button onClick={handleCancelClick}>Cancel</Button>
+                            <div className={styles.ButtonGroup} >
+                                <Button onClick={handleSaveClick} style={{ color: 'white' }}>Save</Button>
+                                <Button onClick={handleCancelClick} style={{ color: 'white' }}>Cancel</Button>
                             </div>
                         </>
                     ) : (
@@ -124,14 +126,17 @@ const TripCard = ({ props }) => {
                     )}
                 </div>
             </div>
+            <p className={styles.CardLink}>
+            <Link href="#" onClick={handleViewButtonClick} className={styles.ViewTripButton}>
+                View More
+            </Link>
+            </p>
 
-            <button className={styles.ViewMore} onClick={handleViewButtonClick}>
-                <span>View</span>
-            </button>
-
-            <button className={styles.DeleteButton} onClick={handleDeleteClick}>
-                <span>Delete</span>
-            </button>
+            <p className={styles.CardLink}>
+            <Link href="#" onClick={handleDeleteClick} className={styles.DeleteTripButton}>
+                Delete
+            </Link>
+            </p>
 
             <Dialog
                 open={openConfirmation}

@@ -10,7 +10,6 @@
     position: relative;
 }
 
-
 .Card h3 {
     display: flex;
     justify-content: center;
@@ -47,32 +46,6 @@
     margin-bottom: 0;
 }
 
-.ViewMore {
-    background-color: #1976D2;
-    border-color: #1976D2;
-    color: #fff;
-    position: absolute;
-    bottom: 30px;
-    left: 30px;
-    padding: 10px 20px;
-    font-size: 14px;
-    box-shadow: none;
-    border-radius: 10px;
-}
-
-.DeleteButton {
-    position: absolute;
-    background-color: #d2191a;
-    border-color: #d2191a;
-    color: #fff;
-    bottom: 30px;
-    right: 30px;
-    padding: 10px 20px;
-    font-size: 14px;
-    box-shadow: none;
-    border-radius: 10px;
-}
-
 .LargeIconButton {
     width: 48px;
     height: 48px;
@@ -93,4 +66,50 @@
     top: 0;
     right: 0;
     margin: 5px;
+}
+
+.ViewTripButton {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #fff;
+    background-color: #1976D2;
+    border: 1px solid #1976D2;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+
+}
+
+.ViewTripButton:hover {
+    color: #1976D2;
+    background-color: #F4F6F6;
+}
+
+.DeleteTripButton {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #fff;
+    background-color: #d2191a;
+    border: 1px solid #d2191a;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+
+}
+
+.DeleteTripButton:hover {
+    color: #d2191a;
+    background-color: #F4F6F6;
 }

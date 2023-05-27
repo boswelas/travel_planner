@@ -13,7 +13,6 @@ export async function getServerSideProps(context) {
     const { id } = context.params;
 
     const res = await fetch(`https://travel-planner-production.up.railway.app/experience/${id}`);
-    // const res = await fetch(`http://127.0.0.1:5001/experience/${id}`);
     const data = await res.json();
 
     return {
@@ -22,7 +21,6 @@ export async function getServerSideProps(context) {
         },
     };
 }
-
 
 const ExperienceDetail = ({ experience }) => {
     const router = useRouter();
@@ -39,20 +37,6 @@ const ExperienceDetail = ({ experience }) => {
             fetchData();
         }
     }, [router.isFallback]);
-
-
-    // if (router.isFallback) {
-    //     return <div>Loading...</div>;
-    // }
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const rating = await handleGetRating(getToken, experience.experience_id);
-    //         setUserRating(rating || 0);
-    //     };
-
-    //     fetchData();
-    // }, []);
 
     const handleRatingChange = (event, newValue) => {
         addUserRating(getToken, experience.experience_id, newValue);

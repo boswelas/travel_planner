@@ -8,12 +8,31 @@ import { handleGetRating } from '../components/getUserRating'
 import { addUserRating } from '../components/addUserRating';
 import { handleDeleteFromTrip } from '../components/deleteFromTrip';
 import { useRouter } from 'next/router';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip, trip_id }) => {
     const router = useRouter();
     const { user, getToken } = useAuth();
     const { experience_id, title, city, state, country, avg_rating, description, keywords, geolocation, img_url } = props;
     const [userRating, setUserRating] = useState(0);
+    const [openConfirmation, setOpenConfirmation] = useState(false);
+
+    const handleDeleteClick = () => {
+        setOpenConfirmation(true);
+    };
+
+    const handleCancelDelete = () => {
+        setOpenConfirmation(false);
+    };
+
+    const handleConfirmDelete = () => {
+        setOpenConfirmation(false);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -73,9 +92,35 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
 
 
             {fromTrip && (
-                <button className={styles.DeleteButton} onClick={(event) => { handleDeleteFromTrip(experience_id, trip_id) }}>Delete</button>
+                <p className={styles.CardLink}>
+                    <Link href="#"
+                        onClick={handleDeleteClick}
+                        className={styles.DeleteExpButton}>
+                        Delete
+                    </Link>
+                </p>
             )}
-
+            <Dialog
+                open={openConfirmation}
+                onClose={handleCancelDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Are you sure you want to delete this experience?
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Once you delete, it cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={(event) => { handleDeleteFromTrip(experience_id, trip_id) }} autoFocus>
+                        OK
+                    </Button>
+                    <Button onClick={handleCancelDelete}>Cancel</Button>
+                </DialogActions>
+            </Dialog>
 
         </div>
     );

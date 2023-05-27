@@ -6,6 +6,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import styles from '@/styles/Trip.module.css';
+import Link from 'next/link'
+
 
 
 const Trip = () => {
@@ -97,9 +99,13 @@ const Trip = () => {
                 <h1>Please Log In</h1>
             ) : (
                 <>
-                    <button className={styles.Button} onClick={handleAddTrip}>Create New Trip</button>
                     <h1>My Trips</h1>
-
+                    <p className={styles.CardLink}>
+                        <Link href="#" onClick={handleAddTrip} className={styles.AddNewTripButton}>
+                            Create New Trip
+                        </Link>
+                    </p>
+                    
                     <Modal
                         open={showAddTripPopup}
                         onClose={handleCloseAddTrip}

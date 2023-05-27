@@ -1,5 +1,5 @@
 export const handleDeleteFromTrip = async (experience_id, trip_id) => {
-   
+
     try {
         const response = await fetch('https://travel-planner-production.up.railway.app/deleteExperienceFromTrip', {
             method: 'POST',
