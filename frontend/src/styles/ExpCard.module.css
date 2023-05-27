@@ -170,3 +170,8 @@
     color: #d2191a !important;
     background-color: #F4F6F6;
 }
+
+.menuList {
+    max-height: 100px; 
+    overflow-y: auto; 
+}
