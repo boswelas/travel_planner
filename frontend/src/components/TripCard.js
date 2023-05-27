@@ -16,7 +16,6 @@ import Link from 'next/link';
 const TripCard = ({ props }) => {
     const [trip_id, user_id, name, background_photo] = props;
     const [openConfirmation, setOpenConfirmation] = useState(false);
-    const [deleted, setDeleted] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedName, setUpdatedName] = useState(name);
     const { user, getToken } = useAuth();
@@ -49,7 +48,8 @@ const TripCard = ({ props }) => {
             );
 
             const data = await response.json();
-            setDeleted(true);
+            window.location.reload();
+
         } catch (error) {
             console.error(error);
         }
@@ -94,10 +94,6 @@ const TripCard = ({ props }) => {
     const handleNameChange = (event) => {
         setUpdatedName(event.target.value);
     };
-
-    if (deleted) {
-        return null;
-    }
 
     return (
         <div className={styles.Card} style={{ backgroundImage: `url('/images/trip_background/${background_photo}.png')` }}>

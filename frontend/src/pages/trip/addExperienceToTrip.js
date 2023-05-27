@@ -8,8 +8,9 @@ import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
 import Stack from '@mui/material/Stack';
+import List from '@mui/material/List';
+
 
 export default function AddToTripDropdown({ experience_id }) {
     const { user, getToken } = useAuth();
@@ -137,11 +138,12 @@ export default function AddToTripDropdown({ experience_id }) {
                         >
                             <Paper>
                                 <ClickAwayListener onClickAway={handleClose}>
-                                    <MenuList
-                                        autoFocusItem={open}
+                                    <List
+                                        autoFocus={open}
                                         id="composition-menu"
                                         aria-labelledby="composition-button"
                                         onKeyDown={handleListKeyDown}
+                                        className={styles.menuList} 
                                     >
                                         {menuItems.length === 0 ? (
                                             <MenuItem disabled>No Trips Saved</MenuItem>
@@ -155,7 +157,7 @@ export default function AddToTripDropdown({ experience_id }) {
                                                 </MenuItem>
                                             ))
                                         )}
-                                    </MenuList>
+                                    </List>
                                 </ClickAwayListener>
                             </Paper>
                         </Grow>
