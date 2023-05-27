@@ -71,7 +71,8 @@ const ExperienceDetail = ({ experience }) => {
             </div>
             <div className={styles.Container}>
                 <PlaceIcon style={{ fontSize: '18px' }} />
-                <div className={styles.Location}>{experience.city}, {experience.state}, {experience.country}</div>
+                <div className={styles.Location}>                {experience.city !== "Unknown" ? experience.city + ", " : ""} {experience.state !== "Unknown" ? experience.state + ", " : ""} {experience.country !== "Unknown" ? experience.country : ""}
+                </div>
                 <GpsFixedIcon style={{ fontSize: '18px' }} />
                 <div className={styles.Geolocation}>{experience.geolocation}</div>
             </div>
