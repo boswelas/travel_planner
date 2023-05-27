@@ -124,7 +124,7 @@ const Trip = () => {
                                         value={newTripTitle}
                                         onChange={(event) =>
                                             setNewTripTitle(event.target.value)
-                                        }
+                                        } required
                                     />
                                 </label>
                                 <div>
