@@ -104,6 +104,8 @@ def get_all_users():
 
 ############################# BEGIN route for Experiences #############################
 # Converts fetched data into dictionary
+
+
 def convert_to_dict(cursor, row):
     result = {}
     for idx, col in enumerate(cursor.description):
@@ -111,6 +113,8 @@ def convert_to_dict(cursor, row):
     return result
 
 # Get all experiences
+
+
 @app.route("/experience", methods=["GET"])
 def experience():
 
@@ -153,6 +157,8 @@ def experience():
         return jsonify(data=data)
 
 # Get experience based on id
+
+
 @app.route("/experience/<int:experience_id>", methods=["GET"])
 def get_experience(experience_id):
     cnx = create_connection()
@@ -212,8 +218,10 @@ def addNewExperience():
 
             title = request.form.get("title")
             description = request.form.get("description")
-            geolocation = list(map(float, request.form.get("geolocation").split(',')))
-            keywords = [keyword.strip() for keyword in request.form.get("keywords").split(',')]
+            geolocation = list(
+                map(float, request.form.get("geolocation").split(',')))
+            keywords = [keyword.strip()
+                        for keyword in request.form.get("keywords").split(',')]
             img_url = request.form.get("img_url")
 
             cnx = create_connection()
@@ -248,7 +256,7 @@ def addNewExperience():
             return jsonify({"experience_id": experience_id})
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-        
+
 
 def get_or_add_location(geolocation):
     """
@@ -351,7 +359,8 @@ def search():
             else:
                 geolocation = None
 
-            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4], 'rating': row[5], 'description': row[6], 'geolocation': geolocation, 'img_url': row[8], 'keywords': row[9]})
+            payload.append({'experience_id': row[0], 'title': row[1], 'city': row[2], 'state': row[3], 'country': row[4],
+                           'rating': row[5], 'description': row[6], 'geolocation': geolocation, 'img_url': row[8], 'keywords': row[9]})
 
         return jsonify(payload)
 
@@ -544,6 +553,9 @@ def TripDetail():
         query = """
             SELECT trip_has_experience.*, 
             experience.*, 
+            location.city, 
+    location.state, 
+    location.country, 
             ST_AsText(experience.geolocation) as geolocation, 
             GROUP_CONCAT(DISTINCT keyword.keyword SEPARATOR ', ') as keywords,
             GROUP_CONCAT(DISTINCT image.img_url SEPARATOR ', ') as img_url
@@ -553,6 +565,7 @@ def TripDetail():
             LEFT JOIN keyword ON experience_has_keyword.keyword_id = keyword.keyword_id
             LEFT JOIN experience_has_image ON experience.experience_id = experience_has_image.experience_id
             LEFT JOIN image ON experience_has_image.image_id = image.image_id
+            JOIN location ON experience.location_id = location.location_id
             WHERE trip_has_experience.trip_id = %s
             GROUP BY experience.experience_id;
         """
