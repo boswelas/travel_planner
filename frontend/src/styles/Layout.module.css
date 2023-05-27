@@ -43,3 +43,17 @@
   margin-left: 10%;
   margin-right: 10%;
 }
+
+.WelcomeContainer {
+  display: flex;
+  align-items: center;
+}
+
+.WelcomeMessage {
+  margin-bottom: 5px;
+
+}
+
+.SignOutLink {
+  font-size: 14px;
+}
