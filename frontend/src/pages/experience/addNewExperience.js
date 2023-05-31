@@ -149,7 +149,7 @@ const ExperienceForm = () => {
                         <label>
                             Image:
                         </label>
-                        <input id="file-upload" key={inputKey} type="file" accept="image/*" onChange={handleImageChange} />
+                        <input id="file-upload" key={inputKey} type="file" accept="image/*" onChange={handleImageChange} required/>
                         {imagePreview && <img src={imagePreview} alt="Preview" style={{ width: "100px", height: "100px" }} />}
                     </div>
                     <div className={styles.rightFormContent}>
