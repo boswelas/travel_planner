@@ -1,69 +1,68 @@
 .title {
-    text-align: left;
+    text-align: center;
     font-size: 28px;
     font-family: 'Abel', sans-serif;
     margin-bottom: 0;
 }
 
-.form{
-	max-width: auto;
-	background:none;
+.form {
+    max-width: auto;
+    background: none;
     font-family: 'Abel', sans-serif;
     border: none;
     margin: 0px;
 }
 
-.form ul{
-	list-style:none;
-	padding:0px;
-	margin:0px;	
+.form ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
 }
 
-.form li{
-	display: block;
-	padding: 9px;
-	border:1px solid #5C5C5C;
-	margin-bottom: 30px;
-	border-radius: 3px;
+.form li {
+    display: block;
+    padding: 9px;
+    border: 1px solid #5C5C5C;
+    margin-bottom: 30px;
+    border-radius: 3px;
 }
 
-.form li:last-child{
-	border:none;
-	margin-bottom: 0px;
+.form li:last-child {
+    border: none;
+    margin-bottom: 0px;
     margin-top: 50px;
-	text-align: right;
+    text-align: right;
 }
 
-.form li > label{
-	display: block;
-	float: left;
-	margin-top: -19px;
-	background: #F4F6F6;
-	height: 14px;
-	padding: 2px 5px 2px 5px;
-	color: #5C5C5C;
-	font-size: 14px;
-	overflow: hidden;
+.form li>label {
+    display: block;
+    float: left;
+    margin-top: -19px;
+    background: #F4F6F6;
+    height: 14px;
+    padding: 2px 5px 2px 5px;
+    color: #5C5C5C;
+    font-size: 14px;
+    overflow: hidden;
 }
 
 .form input[type="text"],
 .form input[type="number"],
 .form input[type="file"],
-.form textarea
-{
-	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
+.form textarea {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     background-color: #F4F6F6;
-	width: 100%;
-	display: block;
-	outline: none;
-	border: none;
+    width: 100%;
+    display: block;
+    outline: none;
+    border: none;
     color: #5C5C5C;
-	height: 25px;
-	line-height: 25px;
-	font-size: 14px;
-	padding: 0;
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    padding: 0;
     font-family: 'Abel', sans-serif;
 }
 
@@ -74,40 +73,40 @@
     border: 1px solid #919191;
 }
 
-.form li > span{
-	background: #e7e9e9;
-	display: block;
-	padding: 3px;
-	margin: 0 -9px -9px -9px;
-	text-align: center;
-	color: #9a9b9b;
-	font-size: 11px;
+.form li>span {
+    background: #e7e9e9;
+    display: block;
+    padding: 3px;
+    margin: 0 -9px -9px -9px;
+    text-align: center;
+    color: #9a9b9b;
+    font-size: 11px;
 }
 
-.form textarea{
-	resize:none;
+.form textarea {
+    resize: none;
 }
 
 .form input[type="submit"],
-.form input[type="button"]{
-	background: #5C5C5C;
-	border: none;
-	padding: 10px 20px 10px 20px;
-	border-radius: 3px;
-	color: #FFFFFF;
+.form input[type="button"] {
+    background: #5C5C5C;
+    border: none;
+    padding: 10px 20px 10px 20px;
+    border-radius: 3px;
+    color: #FFFFFF;
     margin-right: 5px;
     margin-left: 5px;
     font-family: 'Abel', sans-serif;
 }
 
 .form input[type="submit"]:hover,
-.form input[type="button"]:hover{
-	background: #919191;
-	color:#fff;
+.form input[type="button"]:hover {
+    background: #919191;
+    color: #fff;
 }
 
 .form ::placeholder {
-    color:#919191;
+    color: #919191;
     font-size: 12px;
     text-align: center;
 }
@@ -124,22 +123,22 @@
     overflow: hidden;
 }
 
-.form .coordinates > div {
+.form .coordinates>div {
     display: flex;
     width: auto;
 }
 
-.form .coordinates > div > input[type="number"] {
+.form .coordinates>div>input[type="number"] {
     width: auto;
     text-align: center;
 }
 
-.form .coordinates > span {
+.form .coordinates>span {
     display: block;
     margin-top: 9px;
 }
 
-.form .coordinates > div {
+.form .coordinates>div {
     display: flex;
     padding: 0;
     margin: 0;
@@ -161,10 +160,10 @@
     height: fit-content;
     border: 1px solid #5C5C5C;
     display: block;
-    padding: 9px; 
-    margin-top: 30px; 
+    padding: 9px;
+    margin-top: 30px;
     margin-right: 100px;
-    border-radius: 3px; 
+    border-radius: 3px;
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
