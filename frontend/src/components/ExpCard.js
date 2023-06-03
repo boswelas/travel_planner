@@ -35,13 +35,19 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const rating = await handleGetRating(getToken, experience_id);
-            setUserRating(rating || 0);
-        };
+        if (!user) {
+            setUserRating(avg_rating);
+        } else {
+            if (!router.isFallback) {
+                const fetchData = async () => {
+                    const rating = await handleGetRating(getToken, experience_id);
+                    setUserRating(rating || 0);
+                };
 
-        fetchData();
-    }, []);
+                fetchData();
+            }
+        }
+    }, [router.isFallback, user, avg_rating, getToken, experience_id]);
 
     const handleRatingChange = (event, newValue) => {
         addUserRating(getToken, experience_id, newValue);
@@ -61,13 +67,17 @@ const ExpCard = ({ props, showViewMore = true, showBackButton = false, fromTrip,
             </h3>
 
             <p className={styles.CardLocation}>
-                {city !== "Unknown" ? city + ", " : ""} {state !== "Unknown" ? state + ", " : ""} {country !== "Unknown" ? country : ""}
+                {city !== "Unknown" ? city + ", " : ""}
+                {state !== "Unknown" ? state + ", " : ""}
+                {country !== "Unknown" ? country : ""}
             </p>
 
             <p className={styles.CardRating}>
-                <Rating name="rating" value={userRating} onChange={handleRatingChange} />
+                <Rating name="rating" value={userRating} onChange={handleRatingChange} readOnly={!user} precision={0.5} />
                 {avg_rating && <span>{avg_rating}/5 average</span>}
             </p>
+
+
 
 
             <div className={styles.Photo}>

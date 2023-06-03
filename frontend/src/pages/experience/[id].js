@@ -28,17 +28,23 @@ const ExperienceDetail = ({ experience }) => {
     const [userRating, setUserRating] = useState(0);
 
     useEffect(() => {
-        if (!router.isFallback) {
-            const fetchData = async () => {
-                const rating = await handleGetRating(getToken, experience.experience_id);
-                setUserRating(rating || 0);
-            };
+        if (!user) {
+            setUserRating(experience.avg_rating);
+        } else {
+            if (!router.isFallback) {
+                const fetchData = async () => {
+                    const rating = await handleGetRating(getToken, experience.experience_id);
+                    setUserRating(rating || 0);
+                };
 
-            fetchData();
+                fetchData();
+            }
         }
-    }, [router.isFallback]);
+    }, [router.isFallback, user, experience.avg_rating, getToken, experience.experience_id]);
+
 
     const handleRatingChange = (event, newValue) => {
+
         addUserRating(getToken, experience.experience_id, newValue);
         setUserRating(newValue);
     };
@@ -65,13 +71,16 @@ const ExperienceDetail = ({ experience }) => {
             <div className={styles.TitleRatingContainer}>
                 <h1 className={styles.Header}>{experience.title}</h1>
                 <div className={styles.Rating}>
-                    <Rating name="rating" value={userRating} onChange={handleRatingChange} />
+                    <Rating name="rating" value={userRating} onChange={handleRatingChange} readOnly={!user} precision={0.5} />
                     {experience.avg_rating && <span>{experience.avg_rating}/5 average</span>}
                 </div>
             </div>
             <div className={styles.Container}>
                 <PlaceIcon style={{ fontSize: '18px' }} />
-                <div className={styles.Location}>                {experience.city !== "Unknown" ? experience.city + ", " : ""} {experience.state !== "Unknown" ? experience.state + ", " : ""} {experience.country !== "Unknown" ? experience.country : ""}
+                <div className={styles.Location}>
+                    {experience.city !== "Unknown" ? experience.city + ", " : ""}
+                    {experience.state !== "Unknown" ? experience.state + ", " : ""}
+                    {experience.country !== "Unknown" ? experience.country : ""}
                 </div>
                 <GpsFixedIcon style={{ fontSize: '18px' }} />
                 <div className={styles.Geolocation}>{experience.geolocation}</div>

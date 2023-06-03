@@ -6,8 +6,9 @@ const MapFrame = dynamic(() => import('./ExpMap'), {
     ssr: false
 })
 
-const MapContainer = ({ coordinates }) => {
-    return <MapFrame coordinates={coordinates} />;
-  };
 
-export default MapContainer
+const MapContainer = ({ coordinates }) => {
+        return <MapFrame coordinates={coordinates} />;
+};
+
+export default MapContainer;
