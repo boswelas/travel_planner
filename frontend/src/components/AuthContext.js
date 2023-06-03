@@ -46,20 +46,29 @@ export const AuthContextProvider = ({ children }) => {
     }, []);
 
     const login = async () => {
-        const result = await signInWithPopup(auth, provider);
-        const uid = result.user.uid;
-        const email = result.user.email;
-        const displayName = result.user.displayName;
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const uid = result.user.uid;
+            const email = result.user.email;
+            const displayName = result.user.displayName;
 
-        const response = await fetch('https://travel-planner-production.up.railway.app/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ uid: uid, email: email, displayName: displayName }),
-        });
-        response.json();
+            const response = await fetch('https://travel-planner-production.up.railway.app/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ uid: uid, email: email, displayName: displayName }),
+            });
+            response.json();
+        } catch (error) {
+            if (error.code === 'auth/popup-closed-by-user') {
+                console.log('Authentication popup closed by the user');
+            } else {
+                console.log('Authentication error:', error);
+            }
+        }
     };
+
 
     const logout = async () => {
         setUser(null);

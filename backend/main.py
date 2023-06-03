@@ -45,15 +45,7 @@ def verify_token(id_token):
         public_key = cert.public_key()
         payload = jwt.decode(id_token, public_key, algorithms=[
                              alg], audience='travelapp-9e26b', issuer="https://securetoken.google.com/travelapp-9e26b", options={"verify_exp": True, "verify_iat": True})
-        # # Check if the token has expired
-        # if payload["exp"] < datetime.utcnow().timestamp():
-        #     # Token has expired
-        #     print("Token has expired - by timestamp")
-        #     print("Token expiration: ", payload["exp"])
-        #     print("Current time: ", datetime.utcnow().timestamp())
-        #     return False
-        # else:
-        #     # Token is valid
+       # Token is valid
         return payload['user_id']
 
     except jwt.ExpiredSignatureError:
