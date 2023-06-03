@@ -66,7 +66,7 @@ const TripCard = ({ props }) => {
     const handleSaveClick = async () => {
         try {
             const token = await getToken();
-            const response = await fetch('http://127.0.0.1:5001/updateTripName', {
+            const response = await fetch('https://travel-planner-production.up.railway.app/updateTripName', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,15 +123,15 @@ const TripCard = ({ props }) => {
                 </div>
             </div>
             <p className={styles.CardLink}>
-            <Link href="#" onClick={handleViewButtonClick} className={styles.ViewTripButton}>
-                View More
-            </Link>
+                <Link href="#" onClick={handleViewButtonClick} className={styles.ViewTripButton}>
+                    View More
+                </Link>
             </p>
 
             <p className={styles.CardLink}>
-            <Link href="#" onClick={handleDeleteClick} className={styles.DeleteTripButton}>
-                Delete
-            </Link>
+                <Link href="#" onClick={handleDeleteClick} className={styles.DeleteTripButton}>
+                    Delete
+                </Link>
             </p>
 
             <Dialog
